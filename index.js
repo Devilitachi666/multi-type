@@ -1,66 +1,58 @@
 const express = require('express');
-const axios = require('axios');
 const cors = require('cors');
-const providerManager = require('./providerManager');
+const axios = require('axios');
+const providerManager = require('./providers/index');
 
 const app = express();
-
-// 1. MANUAL CORS HEADERS (Hardened for Vercel + Blogger)
-app.use((req, res, next) => {
-    // Allows your Blogger site to fetch data
-    res.setHeader('Access-Control-Allow-Origin', '*'); 
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    
-    // Handle Browser Pre-flight (OPTIONS)
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-    }
-    next();
-});
+app.use(cors());
 
 const TMDB_KEY = process.env.TMDB_API_KEY;
-const BASE = "https://api.themoviedb.org/3";
+const TMDB_BASE = "https://api.themoviedb.org/3";
 
-const tmdb = async (path, params = {}) => {
-    const res = await axios.get(`${BASE}${path}`, { params: { api_key: TMDB_KEY, ...params } });
-    return res.data;
+const tmdbFetch = async (path, params = {}) => {
+    const response = await axios.get(`${TMDB_BASE}${path}`, {
+        params: { api_key: TMDB_KEY, ...params }
+    });
+    return response.data;
 };
 
-const router = express.Router();
-
-router.get('/trending', async (req, res) => {
+// Metadata Routes
+app.get('/api/trending', async (req, res) => {
     try {
-        const data = await tmdb('/trending/all/week');
+        const data = await tmdbFetch('/trending/all/week');
         res.json(data.results);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.get('/details/:type/:id', async (req, res) => {
+app.get('/api/search', async (req, res) => {
     try {
-        const data = await tmdb(`/${req.params.type}/${req.params.id}`, { append_to_response: 'credits,recommendations' });
+        const data = await tmdbFetch('/search/multi', { query: req.query.q });
+        res.json(data.results);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/api/details/:type/:id', async (req, res) => {
+    try {
+        const { type, id } = req.params;
+        const data = await tmdbFetch(`/${type}/${id}`, { append_to_response: 'credits,recommendations,videos' });
         res.json(data);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.get('/tv/:id/season/:sn', async (req, res) => {
+app.get('/api/tv/:id/season/:sn', async (req, res) => {
     try {
-        const data = await tmdb(`/tv/${req.params.id}/season/${req.params.sn}`);
+        const data = await tmdbFetch(`/tv/${req.params.id}/season/${req.params.sn}`);
         res.json(data.episodes);
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.get('/sources', (req, res) => {
-    res.json(providerManager.getAvailable());
+// Sources Route
+app.get('/api/sources', async (req, res) => {
+    const { type, id, s, e } = req.query;
+    try {
+        const results = await providerManager.fetchAllSources(type, id, s, e);
+        res.json(results);
+    } catch (err) { res.status(500).json({ error: "Source fetch failed" }); }
 });
-
-router.get('/watch', (req, res) => {
-    const { p, type, id, s, e } = req.query;
-    res.json(providerManager.getSource(p, type, id, s, e));
-});
-
-// Root API check
-app.use('/api', router);
-app.get('/', (req, res) => res.send('MovieDekhlo API is Online and CORS is Enabled.'));
 
 module.exports = app;
