@@ -5,6 +5,19 @@ const providerManager = require('./providers/index');
 
 const app = express();
 app.use(cors());
+// HARDENED CORS MIDDLEWARE
+app.use((req, res, next) => {
+    // Allows your specific blogger site or any origin (*)
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+    // Handle Browser Pre-flight (OPTIONS) requests
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+    next();
+});
 
 const TMDB_KEY = process.env.TMDB_API_KEY;
 const TMDB_BASE = "https://api.themoviedb.org/3";
