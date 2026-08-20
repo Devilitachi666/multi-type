@@ -5,44 +5,55 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 
-// Global Headers for CORS
+// Global Headers for explicit CORS safety
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.sendStatus(200);
-  next();
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    next();
 });
 
 const TMDB_KEY = process.env.TMDB_API_KEY;
-const BASE = "https://api.themoviedb.org/3";
+const BASE_URL = "https://api.themoviedb.org/3";
 
 const tmdb = async (path, params = {}) => {
-    const res = await axios.get(`${BASE}${path}`, { params: { api_key: TMDB_KEY, ...params } });
-    return res.data;
+    const response = await axios.get(`${BASE_URL}${path}`, {
+        params: { api_key: TMDB_KEY, ...params }
+    });
+    return response.data;
 };
 
 const router = express.Router();
 
 router.get('/trending', async (req, res) => {
-    const data = await tmdb('/trending/all/week');
-    res.json(data.results);
-});
-
-router.get('/details/:type/:id', async (req, res) => {
-    const data = await tmdb(`/${req.params.type}/${req.params.id}`, { append_to_response: 'credits,recommendations' });
-    res.json(data);
-});
-
-router.get('/tv/:id/season/:sn', async (req, res) => {
-    const data = await tmdb(`/tv/${req.params.id}/season/${req.params.sn}`);
-    res.json(data.episodes);
+    try {
+        const data = await tmdb('/trending/all/week');
+        res.json(data.results);
+    } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 router.get('/search', async (req, res) => {
-    const data = await tmdb('/search/multi', { query: req.query.q });
-    res.json(data.results);
+    try {
+        const data = await tmdb('/search/multi', { query: req.query.q });
+        res.json(data.results);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+router.get('/details/:type/:id', async (req, res) => {
+    try {
+        const { type, id } = req.params;
+        const data = await tmdb(`/${type}/${id}`, { append_to_response: 'credits,recommendations' });
+        res.json(data);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+router.get('/tv/:id/season/:sn', async (req, res) => {
+    try {
+        const data = await tmdb(`/tv/${req.params.id}/season/${req.params.sn}`);
+        res.json(data.episodes);
+    } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 app.use('/api', router);
+
 module.exports = app;
