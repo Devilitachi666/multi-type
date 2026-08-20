@@ -1,0 +1,45 @@
+module.exports = {
+    id: "cineverse",
+    name: "Cineverse (Server 1)",
+    enabled: true,
+    supportsMovies: true,
+    supportsTV: true,
+    getMovieSource: (id) => ({ success: true, url: `https://vidsrc.to/embed/movie/${id}`, type: "embed" }),
+    getTvSource: (id, s, e) => ({ success: true, url: `https://vidsrc.to/embed/tv/${id}/${s}/${e}`, type: "embed" })
+};
+module.exports = {
+    id: "gdmirror",
+    name: "GDmirror (Hindi Dub)",
+    enabled: true,
+    supportsMovies: true,
+    supportsTV: true,
+    getMovieSource: (id) => ({ success: true, url: `https://multiembed.mov/?video_id=${id}&tmdb=1`, type: "embed" }),
+    getTvSource: (id, s, e) => ({ success: true, url: `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`, type: "embed" })
+};
+module.exports = {
+    id: "screenscape",
+    name: "Screenscape.me",
+    enabled: true,
+    supportsMovies: true,
+    supportsTV: true,
+    getMovieSource: (id) => ({ success: true, url: `https://vidsrc.me/embed/movie?tmdb=${id}`, type: "embed" }),
+    getTvSource: (id, s, e) => ({ success: true, url: `https://vidsrc.me/embed/tv?tmdb=${id}&sea=${s}&epi=${e}`, type: "embed" })
+};
+module.exports = {
+    id: "nxsha",
+    name: "Nxsha (Nasha Server)",
+    enabled: true,
+    supportsMovies: true,
+    supportsTV: true,
+    getMovieSource: (id) => ({ success: true, url: `https://vidsrc.cc/v2/embed/movie/${id}`, type: "embed" }),
+    getTvSource: (id, s, e) => ({ success: true, url: `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}`, type: "embed" })
+};
+module.exports = {
+    id: "nhdapi",
+    name: "NHDapi (Indian Series)",
+    enabled: true,
+    supportsMovies: true,
+    supportsTV: true,
+    getMovieSource: (id) => ({ success: true, url: `https://autoembed.co/movie/tmdb/${id}`, type: "embed" }),
+    getTvSource: (id, s, e) => ({ success: true, url: `https://autoembed.co/tv/tmdb/${id}?s=${s}&e=${e}`, type: "embed" })
+};
