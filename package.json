@@ -1,11 +1,11 @@
 {
-  "name": "moviedekhlo-api",
+  "name": "maroonflix-api",
   "version": "1.0.0",
+  "description": "Provider-based media streaming API for Maroonflix",
   "main": "api/index.js",
   "dependencies": {
-    "axios": "^1.6.2",
+    "axios": "^1.6.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2"
+    "dotenv": "^16.3.1"
   }
 }
