@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Provider-based media streaming API for MaroonFlix",
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "dependencies": {
     "axios": "^1.6.0",
