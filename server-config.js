@@ -9,11 +9,7 @@ module.exports = {
       id: 'demo',
       enabled: true,
       priority: 1,
-      config: {
-        url:
-          process.env.DEMO_STREAM_URL ||
-          'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'
-      }
+      config: {}
     }
   ],
 
