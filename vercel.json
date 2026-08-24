@@ -1,15 +1,8 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/sources.js",
-      "use": "@vercel/node"
+  "functions": {
+    "api/sources.js": {
+      "runtime": "nodejs20.x"
     }
-  ],
-  "routes": [
-    {
-      "src": "/api/sources",
-      "dest": "/api/sources.js"
-    }
-  ]
+  }
 }
