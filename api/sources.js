@@ -1,5 +1,3 @@
-const sourceManager = require('../source-manager');
-
 module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -15,12 +13,7 @@ module.exports = async (req, res) => {
         });
     }
 
-    const {
-        id,
-        type,
-        s = null,
-        e = null
-    } = req.query || {};
+    const { id, type } = req.query || {};
 
     if (!id || !type) {
         return res.status(400).json({
@@ -28,22 +21,11 @@ module.exports = async (req, res) => {
         });
     }
 
-    try {
-        const sources = await sourceManager.getSources(
-            String(id),
-            String(type),
-            s !== null ? String(s) : null,
-            e !== null ? String(e) : null
-        );
-
-        return res.status(200).json({
-            sources
-        });
-    } catch (error) {
-        console.error('Source API error:', error);
-
-        return res.status(500).json({
-            error: 'Unable to retrieve sources'
-        });
-    }
+    return res.status(200).json({
+        sources: [],
+        test: true,
+        id: String(id),
+        type: String(type),
+        message: 'MaroonFlix API is working. No providers have been added yet.'
+    });
 };
