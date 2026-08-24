@@ -1,13 +1,24 @@
-class ProviderService {
-    constructor(config = {}) {
-        this.config = config;
-    }
+const providers = {
+  demo: {
+    name: 'Demo Provider',
 
-    async getStreams(id, type, s = null, e = null) {
-        throw new Error(
-            'getStreams() must be implemented by the provider'
-        );
+    getSources: async ({ id, type, season, episode }) => {
+      return [
+        {
+          name: 'Demo Server',
+          url: 'https://example.com/your-video.m3u8',
+          type: 'hls',
+          quality: '1080p',
+          language: 'English',
+          provider: 'demo',
+          id,
+          mediaType: type,
+          season,
+          episode
+        }
+      ];
     }
-}
+  }
+};
 
-module.exports = ProviderService;
+module.exports = providers;
