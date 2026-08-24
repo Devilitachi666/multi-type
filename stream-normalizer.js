@@ -1,4 +1,4 @@
-const Stream = require('../models/stream');
+const Stream = require('./stream');
 
 class StreamNormalizer {
     static normalize(rawStream, providerInfo = {}) {
