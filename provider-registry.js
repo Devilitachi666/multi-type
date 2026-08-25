@@ -9,7 +9,7 @@ class DemoProvider extends ProviderService {
     serverName: 'Demo HLS Server',
 
     url:
-        'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+        url: 'https://wowzaec2demo.streamlock.net/vod-multitrack/_definst_/smil:ElephantsDream/elephantsdream2.smil/playlist.m3u',
 
     type: 'hls',
 
