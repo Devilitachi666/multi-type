@@ -5,21 +5,28 @@ class DemoProvider extends ProviderService {
     return [
       {
         stream: {
-          id: `demo-${id}`,
-          serverName: 'Demo HLS Server',
-          url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
-          type: 'hls',
-          quality: '1080p',
-          qualities: ['1080p'],
-          languages: ['English'],
-          audioTracks: [
-            {
-              language: 'English',
-              label: 'English'
-            }
-          ],
-          subtitles: []
-        },
+    id: `demo-${id}`,
+    serverName: 'Demo HLS Server',
+
+    url:
+        'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+
+    type: 'hls',
+
+    /*
+     * These are defaults only.
+     * The actual HLS manifest determines
+     * available qualities/audio tracks.
+     */
+    quality: 'auto',
+    qualities: [],
+
+    languages: [],
+
+    audioTracks: [],
+
+    subtitles: []
+},
 
         providerInfo: {
           id: 'demo',
