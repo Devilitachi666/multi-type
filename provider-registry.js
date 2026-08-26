@@ -6,13 +6,18 @@ class DemoProvider {
       {
         stream: {
           id: `demo-${id}`,
-          serverName: 'Shaka Angel One HLS',
-          url: 'https://storage.googleapis.com/shaka-demo-assets/angel-one-hls/hls.m3u8',
+          serverName: 'Demo HLS Server',
+          url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
           type: 'hls',
-          quality: 'auto',
-          qualities: [],
-          languages: [],
-          audioTracks: [],
+          quality: '1080p',
+          qualities: ['1080p'],
+          languages: ['English'],
+          audioTracks: [
+            {
+              language: 'English',
+              label: 'English'
+            }
+          ],
           subtitles: []
         },
 
