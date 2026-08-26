@@ -9,38 +9,83 @@ class ProviderManager {
     }
 
     async fetchAllStreams(id, type, s = null, e = null) {
-        const streamPromises = this.providers.map(async (provider) => {
-            try {
-                const instance = ProviderFactory.getProvider(
+
+    console.log('SOURCE DEBUG: providers =', this.providers);
+
+    const streamPromises = this.providers.map(async (provider) => {
+
+        try {
+
+            console.log(
+                'SOURCE DEBUG: calling provider =',
+                provider.id
+            );
+
+            const instance =
+                ProviderFactory.getProvider(
                     provider.id,
                     provider.config
                 );
 
-                if (!instance) {
-                    return [];
-                }
+            console.log(
+                'SOURCE DEBUG: provider instance =',
+                instance
+            );
 
-                return await instance.getStreams(
+            if (!instance) {
+                console.log(
+                    'SOURCE DEBUG: NO PROVIDER INSTANCE'
+                );
+
+                return [];
+            }
+
+            const streams =
+                await instance.getStreams(
                     id,
                     type,
                     s,
                     e
                 );
 
-            } catch (error) {
-                console.error(
-                    `Provider ${provider.id} failed:`,
-                    error
-                );
+            console.log(
+                'SOURCE DEBUG: provider streams =',
+                streams
+            );
 
-                return [];
-            }
-        });
+            return streams;
 
-        const results = await Promise.all(streamPromises);
+        } catch (error) {
 
-        return results.flat();
-    }
+            console.error(
+                'SOURCE DEBUG: provider failed =',
+                provider.id,
+                error
+            );
+
+            return [];
+        }
+    });
+
+    const results =
+        await Promise.all(
+            streamPromises
+        );
+
+    console.log(
+        'SOURCE DEBUG: provider results =',
+        results
+    );
+
+    const flattened =
+        results.flat();
+
+    console.log(
+        'SOURCE DEBUG: flattened =',
+        flattened
+    );
+
+    return flattened;
 }
 
 module.exports = new ProviderManager();
