@@ -6,18 +6,11 @@ class DemoProvider {
       {
         stream: {
           id: `demo-${id}`,
-
           serverName: 'Shaka Angel One HLS',
-
           url: 'https://storage.googleapis.com/shaka-demo-assets/angel-one-hls/hls.m3u8',
-
           type: 'hls',
-
-          // Leave these empty because the HLS master manifest
-          // contains the actual renditions/tracks.
-          quality: null,
+          quality: 'auto',
           qualities: [],
-
           languages: [],
           audioTracks: [],
           subtitles: []
@@ -25,14 +18,12 @@ class DemoProvider {
 
         providerInfo: {
           id: 'demo',
-          name: 'Shaka Demo Provider',
+          name: 'Demo Provider',
           priority: 1
         }
       }
     ];
-
   }
-
 }
 
 module.exports = {
