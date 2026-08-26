@@ -7,7 +7,7 @@ class DemoProvider {
         stream: {
           id: `demo-${id}`,
           serverName: 'Demo HLS Server',
-          url: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+          url: 'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8',
           type: 'hls',
           quality: '1080p',
           qualities: ['1080p'],
