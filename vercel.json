@@ -1,13 +1,29 @@
 {
   "version": 2,
-  "rewrites": [
+
+  "builds": [
     {
-      "source": "/api/sources",
-      "destination": "/api/sources.js"
+      "src": "api/sources.js",
+      "use": "@vercel/node"
     },
     {
-      "source": "/api/movies",
-      "destination": "/api/movies.js"
+      "src": "api/movies.js",
+      "use": "@vercel/node"
+    }
+  ],
+
+  "routes": [
+    {
+      "src": "/api/sources",
+      "dest": "/api/sources.js"
+    },
+    {
+      "src": "/api/movies",
+      "dest": "/api/movies.js"
+    },
+    {
+      "src": "/hls/(.*)",
+      "dest": "/hls/$1"
     }
   ]
 }
