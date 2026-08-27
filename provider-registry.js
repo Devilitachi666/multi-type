@@ -6,7 +6,7 @@ class DemoProvider {
             stream: {
                 id: `demo-${id}`,
                 serverName: 'Apple HLS Demo',
-                url: 'https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_ts/master.m3u8',
+                url: 'https://devilitachi666.github.io/maroonflix-hls-test/master.m3u8',
                 type: 'hls',
                 quality: null,
                 qualities: [],
