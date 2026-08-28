@@ -1,13 +1,3 @@
 {
-  "version": 2,
-  "rewrites": [
-    {
-      "source": "/api/sources",
-      "destination": "/api.js"
-    },
-    {
-      "source": "/api/movies",
-      "destination": "/api/movies.js"
-    }
-  ]
+  "version": 2
 }
