@@ -1,4 +1,4 @@
-const sourceManager = require('../source-manager');
+const sourceManager = require('./source-manager');
 
 module.exports = async (req, res) => {
     // 1. Set CORS specifically for your Blogger domain (or fallback during local testing)
