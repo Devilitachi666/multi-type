@@ -1,11 +1,5 @@
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 
-/*
-|--------------------------------------------------------------------------
-| TMDB AUTHENTICATION
-|--------------------------------------------------------------------------
-*/
-
 function tmdbHeaders() {
     const token = process.env.TMDB_ACCESS_TOKEN;
 
@@ -21,17 +15,9 @@ function tmdbHeaders() {
     };
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| NORMALIZE MOVIE
-|--------------------------------------------------------------------------
-*/
-
 function normalizeMovie(movie) {
     return {
         id: String(movie.id),
-
         type: 'movie',
 
         title:
@@ -72,13 +58,6 @@ function normalizeMovie(movie) {
                 : null
     };
 }
-
-
-/*
-|--------------------------------------------------------------------------
-| TMDB REQUEST
-|--------------------------------------------------------------------------
-*/
 
 async function tmdbRequest(
     path,
@@ -126,21 +105,10 @@ async function tmdbRequest(
     return response.json();
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| API HANDLER
-|--------------------------------------------------------------------------
-*/
-
 module.exports = async (
     req,
     res
 ) => {
-
-    /*
-     * CORS
-     */
 
     res.setHeader(
         'Access-Control-Allow-Origin',
@@ -157,66 +125,30 @@ module.exports = async (
         'Content-Type'
     );
 
-
-    /*
-     * OPTIONS / PREFLIGHT
-     */
-
     if (req.method === 'OPTIONS') {
-
         return res
             .status(204)
             .end();
-
     }
 
-
-    /*
-     * METHOD CHECK
-     */
-
     if (req.method !== 'GET') {
-
         return res
             .status(405)
             .json({
                 success: false,
                 error: 'Method Not Allowed'
             });
-
     }
-
 
     try {
 
         const {
             id,
-
-            /*
-             * Search query
-             *
-             * Example:
-             * /api/movies?query=avatar
-             */
-
             query = '',
-
-            /*
-             * Pagination
-             */
-
+            genre = '',
+            category = '',
             page = '1',
-
-            /*
-             * TMDB language
-             */
-
             language = 'en-US',
-
-            /*
-             * Region
-             */
-
             region = 'IN'
         } = req.query || {};
 
@@ -225,10 +157,6 @@ module.exports = async (
         |--------------------------------------------------------------------------
         | SPECIFIC MOVIE
         |--------------------------------------------------------------------------
-        |
-        | Example:
-        | /api/movies?id=550
-        |
         */
 
         if (id) {
@@ -241,26 +169,23 @@ module.exports = async (
                     }
                 );
 
-            return res
-                .status(200)
-                .json({
-                    success: true,
+            return res.status(200).json({
 
-                    movie:
-                        normalizeMovie(movie)
-                });
+                success: true,
 
+                mode: 'detail',
+
+                movie:
+                    normalizeMovie(movie)
+
+            });
         }
 
 
         /*
         |--------------------------------------------------------------------------
-        | MOVIE SEARCH
+        | SEARCH
         |--------------------------------------------------------------------------
-        |
-        | Example:
-        | /api/movies?query=avatar
-        |
         */
 
         if (
@@ -288,55 +213,182 @@ module.exports = async (
                     }
                 );
 
-            return res
-                .status(200)
-                .json({
+            return res.status(200).json({
 
-                    success: true,
+                success: true,
 
-                    mode: 'search',
+                mode: 'search',
 
-                    query:
-                        searchQuery,
+                query:
+                    searchQuery,
 
-                    page:
-                        data.page || 1,
+                page:
+                    data.page || 1,
 
-                    totalPages:
-                        data.total_pages || 1,
+                totalPages:
+                    data.total_pages || 1,
 
-                    totalResults:
-                        data.total_results || 0,
+                totalResults:
+                    data.total_results || 0,
 
-                    movies:
-                        Array.isArray(
-                            data.results
+                movies:
+                    Array.isArray(data.results)
+                        ? data.results.map(
+                            normalizeMovie
                         )
-                            ? data.results.map(
-                                normalizeMovie
-                            )
-                            : []
+                        : []
 
-                });
-
+            });
         }
 
 
         /*
         |--------------------------------------------------------------------------
-        | DEFAULT POPULAR MOVIES
+        | GENRE
         |--------------------------------------------------------------------------
         |
-        | Used by your current homepage.
-        |
         | Example:
-        | /api/movies?page=1&language=en-US&region=IN
+        | /api/movies?genre=28
         |
         */
 
+        if (
+            String(genre).trim()
+        ) {
+
+            const data =
+                await tmdbRequest(
+                    '/discover/movie',
+                    {
+                        language,
+
+                        region,
+
+                        page,
+
+                        with_genres:
+                            String(genre),
+
+                        sort_by:
+                            'popularity.desc',
+
+                        include_adult:
+                            'false',
+
+                        include_video:
+                            'false'
+                    }
+                );
+
+            return res.status(200).json({
+
+                success: true,
+
+                mode: 'genre',
+
+                genre:
+                    String(genre),
+
+                page:
+                    data.page || 1,
+
+                totalPages:
+                    data.total_pages || 1,
+
+                totalResults:
+                    data.total_results || 0,
+
+                movies:
+                    Array.isArray(data.results)
+                        ? data.results.map(
+                            normalizeMovie
+                        )
+                        : []
+
+            });
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CATEGORIES
+        |--------------------------------------------------------------------------
+        */
+
+        let endpoint =
+            '/movie/popular';
+
+        let categoryName =
+            'popular';
+
+
+        switch (
+            String(category).toLowerCase()
+        ) {
+
+            case 'popular':
+
+                endpoint =
+                    '/movie/popular';
+
+                categoryName =
+                    'popular';
+
+                break;
+
+
+            case 'top-rated':
+
+            case 'top_rated':
+
+                endpoint =
+                    '/movie/top_rated';
+
+                categoryName =
+                    'top-rated';
+
+                break;
+
+
+            case 'now-playing':
+
+            case 'now_playing':
+
+                endpoint =
+                    '/movie/now_playing';
+
+                categoryName =
+                    'now-playing';
+
+                break;
+
+
+            case 'upcoming':
+
+                endpoint =
+                    '/movie/upcoming';
+
+                categoryName =
+                    'upcoming';
+
+                break;
+
+
+            default:
+
+                endpoint =
+                    '/movie/popular';
+
+                categoryName =
+                    'popular';
+
+                break;
+        }
+
+
         const data =
             await tmdbRequest(
-                '/movie/popular',
+                endpoint,
                 {
                     language,
 
@@ -353,50 +405,39 @@ module.exports = async (
             );
 
 
-        return res
-            .status(200)
-            .json({
+        return res.status(200).json({
 
-                success: true,
+            success: true,
 
-                mode: 'popular',
+            mode: 'category',
 
-                page:
-                    data.page || 1,
+            category:
+                categoryName,
 
-                totalPages:
-                    data.total_pages || 1,
+            page:
+                data.page || 1,
 
-                totalResults:
-                    data.total_results || 0,
+            totalPages:
+                data.total_pages || 1,
 
-                movies:
-                    Array.isArray(
-                        data.results
+            totalResults:
+                data.total_results || 0,
+
+            movies:
+                Array.isArray(data.results)
+                    ? data.results.map(
+                        normalizeMovie
                     )
-                        ? data.results.map(
-                            normalizeMovie
-                        )
-                        : []
+                    : []
 
-            });
-
+        });
 
     } catch (error) {
-
-        /*
-         * SERVER LOG
-         */
 
         console.error(
             'TMDB metadata error:',
             error
         );
-
-
-        /*
-         * CLIENT RESPONSE
-         */
 
         return res
             .status(500)
@@ -408,7 +449,5 @@ module.exports = async (
                     'Unable to retrieve movie metadata'
 
             });
-
     }
-
 };
