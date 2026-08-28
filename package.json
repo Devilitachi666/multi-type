@@ -2,7 +2,6 @@
   "name": "maroonflix-api",
   "version": "1.0.0",
   "description": "Provider-based media iframe embed API for MaroonFlix",
-  "main": "api.js",
   "scripts": {
     "start": "node api.js"
   },
