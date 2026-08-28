@@ -1,7 +1,8 @@
 {
   "name": "maroonflix-api",
   "version": "1.0.0",
-  "description": "Provider-based media iframe embed API for MaroonFlix",
+  "private": true,
+  "description": "Provider-based media iframe API for MaroonFlix",
   "engines": {
     "node": "22.x"
   },
