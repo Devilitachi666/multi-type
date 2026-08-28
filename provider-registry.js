@@ -4,7 +4,7 @@
  */
 
 class VidLinkProvider {
-    static async getStreams(id, type, season = 1, episode = 1, options = {}) {
+    async getStreams(id, type, season = 1, episode = 1, options = {}) {
         const subOrDub = options.subOrDub || 'sub';
         let url = '';
 
@@ -24,7 +24,7 @@ class VidLinkProvider {
 }
 
 class VidSrcProvider {
-    static async getStreams(id, type, season = 1, episode = 1) {
+    async getStreams(id, type, season = 1, episode = 1) {
         const url = type === 'movie'
             ? `https://vidsrc.sbs/embed/movie/${id}`
             : `https://vidsrc.sbs/embed/tv/${id}/${season}/${episode}`;
@@ -37,7 +37,7 @@ class VidSrcProvider {
 }
 
 class AutoEmbedProvider {
-    static async getStreams(id, type, season = 1, episode = 1) {
+    async getStreams(id, type, season = 1, episode = 1) {
         const url = type === 'movie'
             ? `https://player.autoembed.cc/embed/movie/${id}`
             : `https://player.autoembed.cc/embed/tv/${id}/${season}/${episode}`;
@@ -50,7 +50,7 @@ class AutoEmbedProvider {
 }
 
 class TwoEmbedProvider {
-    static async getStreams(id, type, season = 1, episode = 1) {
+    async getStreams(id, type, season = 1, episode = 1) {
         const url = type === 'movie'
             ? `https://www.2embed.cc/embed/${id}`
             : `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`;
@@ -63,7 +63,7 @@ class TwoEmbedProvider {
 }
 
 class SuperEmbedProvider {
-    static async getStreams(id, type, season = 1, episode = 1) {
+    async getStreams(id, type, season = 1, episode = 1) {
         const url = type === 'movie'
             ? `https://multiembed.mov/?video_id=${id}&tmdb=1`
             : `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${episode}`;
@@ -76,7 +76,7 @@ class SuperEmbedProvider {
 }
 
 class SuperEmbedVIPProvider {
-    static async getStreams(id, type, season = 1, episode = 1) {
+    async getStreams(id, type, season = 1, episode = 1) {
         const url = type === 'movie'
             ? `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1`
             : `https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1&s=${season}&e=${episode}`;
@@ -89,7 +89,7 @@ class SuperEmbedVIPProvider {
 }
 
 class NontonGoProvider {
-    static async getStreams(id, type, season = 1, episode = 1) {
+    async getStreams(id, type, season = 1, episode = 1) {
         const url = type === 'movie'
             ? `https://www.nontongo.win/embed/movie/${id}`
             : `https://www.nontongo.win/embed/tv/${id}/${season}/${episode}`;
