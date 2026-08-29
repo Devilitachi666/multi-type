@@ -1,4 +1,3 @@
-```js
 const sourceManager = require('../source-manager');
 
 module.exports = async (req, res) => {
