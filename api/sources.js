@@ -1,33 +1,46 @@
+```js
 const sourceManager = require('../source-manager');
 
 module.exports = async (req, res) => {
-    // 1. CORS Setup (Origin matches your Blogger frontend)
+    // ---------------------------------------------------------
+    // CORS
+    // ---------------------------------------------------------
     const allowedOrigin = 'https://freemoviedekhlo.blogspot.com';
     const requestOrigin = req.headers.origin;
 
-    // Allow your blog domain or localhost/previews if testing
-    if (requestOrigin === allowedOrigin || process.env.NODE_ENV !== 'production') {
-        res.setHeader('Access-Control-Allow-Origin', requestOrigin || allowedOrigin);
-    } else {
+    if (requestOrigin === allowedOrigin) {
         res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
     }
 
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Content-Type'
+    );
 
-    // Preflight check
+    // Allow browser/proxy caching to vary by Origin
+    res.setHeader('Vary', 'Origin');
+
+    // ---------------------------------------------------------
+    // OPTIONS / PREFLIGHT
+    // ---------------------------------------------------------
     if (req.method === 'OPTIONS') {
         return res.status(204).end();
     }
 
-    // Only GET method allowed
+    // ---------------------------------------------------------
+    // GET ONLY
+    // ---------------------------------------------------------
     if (req.method !== 'GET') {
         return res.status(405).json({
+            success: false,
             error: 'Method Not Allowed'
         });
     }
 
-    // Extract query parameters (including optional provider selection)
+    // ---------------------------------------------------------
+    // QUERY PARAMETERS
+    // ---------------------------------------------------------
     const {
         id,
         type,
@@ -38,15 +51,31 @@ module.exports = async (req, res) => {
 
     if (!id || !type) {
         return res.status(400).json({
+            success: false,
             error: 'Missing required parameters: id and type'
         });
     }
 
+    // ---------------------------------------------------------
+    // VALID MEDIA TYPES
+    // ---------------------------------------------------------
+    const mediaType = String(type).toLowerCase();
+
+    if (!['movie', 'tv', 'anime'].includes(mediaType)) {
+        return res.status(400).json({
+            success: false,
+            error: 'Invalid type. Use movie, tv, or anime.'
+        });
+    }
+
     try {
-        // Retrieve iFrame embed sources from sourceManager
+        console.log(
+            `[Sources API] id=${id} type=${mediaType} s=${s} e=${e} provider=${provider || 'all'}`
+        );
+
         const sources = await sourceManager.getSources(
             String(id),
-            String(type),
+            mediaType,
             s !== null ? String(s) : null,
             e !== null ? String(e) : null,
             provider ? String(provider) : null
@@ -58,7 +87,7 @@ module.exports = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Source API error:', error);
+        console.error('[Sources API] Error:', error);
 
         return res.status(500).json({
             success: false,
@@ -66,3 +95,4 @@ module.exports = async (req, res) => {
         });
     }
 };
+```
