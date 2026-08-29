@@ -2,9 +2,7 @@
 const sourceManager = require('../source-manager');
 
 module.exports = async (req, res) => {
-    // ---------------------------------------------------------
     // CORS
-    // ---------------------------------------------------------
     const allowedOrigin = 'https://freemoviedekhlo.blogspot.com';
     const requestOrigin = req.headers.origin;
 
@@ -13,24 +11,15 @@ module.exports = async (req, res) => {
     }
 
     res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader(
-        'Access-Control-Allow-Headers',
-        'Content-Type'
-    );
-
-    // Allow browser/proxy caching to vary by Origin
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
     res.setHeader('Vary', 'Origin');
 
-    // ---------------------------------------------------------
-    // OPTIONS / PREFLIGHT
-    // ---------------------------------------------------------
+    // Handle preflight
     if (req.method === 'OPTIONS') {
         return res.status(204).end();
     }
 
-    // ---------------------------------------------------------
-    // GET ONLY
-    // ---------------------------------------------------------
+    // GET only
     if (req.method !== 'GET') {
         return res.status(405).json({
             success: false,
@@ -38,9 +27,7 @@ module.exports = async (req, res) => {
         });
     }
 
-    // ---------------------------------------------------------
-    // QUERY PARAMETERS
-    // ---------------------------------------------------------
+    // Query parameters
     const {
         id,
         type,
@@ -56,9 +43,6 @@ module.exports = async (req, res) => {
         });
     }
 
-    // ---------------------------------------------------------
-    // VALID MEDIA TYPES
-    // ---------------------------------------------------------
     const mediaType = String(type).toLowerCase();
 
     if (!['movie', 'tv', 'anime'].includes(mediaType)) {
@@ -70,7 +54,12 @@ module.exports = async (req, res) => {
 
     try {
         console.log(
-            `[Sources API] id=${id} type=${mediaType} s=${s} e=${e} provider=${provider || 'all'}`
+            '[Sources API]',
+            'id=' + id,
+            'type=' + mediaType,
+            's=' + s,
+            'e=' + e,
+            'provider=' + (provider || 'all')
         );
 
         const sources = await sourceManager.getSources(
@@ -83,7 +72,7 @@ module.exports = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            sources
+            sources: sources || []
         });
 
     } catch (error) {
@@ -91,7 +80,10 @@ module.exports = async (req, res) => {
 
         return res.status(500).json({
             success: false,
-            error: 'Unable to retrieve iframe sources'
+            error: 'Unable to retrieve iframe sources',
+            details: process.env.NODE_ENV !== 'production'
+                ? error.message
+                : undefined
         });
     }
 };
