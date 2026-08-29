@@ -1,4 +1,3 @@
-```js
 /**
  * MaroonFlix Provider Implementations
  *
@@ -490,4 +489,3 @@ module.exports = {
     videasy: VideasyProvider,
     nxsha: NxshaProvider
 };
-```
