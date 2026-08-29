@@ -4,9 +4,7 @@ function tmdbHeaders() {
     const token = process.env.TMDB_ACCESS_TOKEN;
 
     if (!token) {
-        throw new Error(
-            'TMDB_ACCESS_TOKEN is not configured'
-        );
+        throw new Error('TMDB_ACCESS_TOKEN is not configured');
     }
 
     return {
@@ -14,6 +12,13 @@ function tmdbHeaders() {
         Authorization: `Bearer ${token}`
     };
 }
+
+
+/*
+ * --------------------------------------------------
+ * MOVIE NORMALIZER
+ * --------------------------------------------------
+ */
 
 function normalizeMovie(movie) {
     return {
@@ -59,13 +64,70 @@ function normalizeMovie(movie) {
     };
 }
 
+
+/*
+ * --------------------------------------------------
+ * TV NORMALIZER
+ * --------------------------------------------------
+ */
+
+function normalizeTV(show) {
+    return {
+        id: String(show.id),
+        type: 'tv',
+
+        title:
+            show.name ||
+            show.original_name ||
+            'Untitled',
+
+        originalTitle:
+            show.original_name ||
+            show.name ||
+            '',
+
+        overview:
+            show.overview || '',
+
+        releaseDate:
+            show.first_air_date || '',
+
+        year:
+            show.first_air_date
+                ? show.first_air_date.slice(0, 4)
+                : '',
+
+        rating:
+            Number(show.vote_average || 0),
+
+        voteCount:
+            Number(show.vote_count || 0),
+
+        poster:
+            show.poster_path
+                ? `https://image.tmdb.org/t/p/w500${show.poster_path}`
+                : null,
+
+        backdrop:
+            show.backdrop_path
+                ? `https://image.tmdb.org/t/p/w1280${show.backdrop_path}`
+                : null
+    };
+}
+
+
+/*
+ * --------------------------------------------------
+ * TMDB REQUEST
+ * --------------------------------------------------
+ */
+
 async function tmdbRequest(
     path,
     params = {}
 ) {
-    const url = new URL(
-        `${TMDB_BASE_URL}${path}`
-    );
+    const url =
+        new URL(`${TMDB_BASE_URL}${path}`);
 
     Object.entries(params).forEach(
         ([key, value]) => {
@@ -105,10 +167,21 @@ async function tmdbRequest(
     return response.json();
 }
 
+
+/*
+ * --------------------------------------------------
+ * API
+ * --------------------------------------------------
+ */
+
 module.exports = async (
     req,
     res
 ) => {
+
+    /*
+     * CORS
+     */
 
     res.setHeader(
         'Access-Control-Allow-Origin',
@@ -125,25 +198,33 @@ module.exports = async (
         'Content-Type'
     );
 
+
     if (req.method === 'OPTIONS') {
+
         return res
             .status(204)
             .end();
+
     }
 
+
     if (req.method !== 'GET') {
+
         return res
             .status(405)
             .json({
                 success: false,
                 error: 'Method Not Allowed'
             });
+
     }
+
 
     try {
 
         const {
             id,
+            type = '',
             query = '',
             genre = '',
             category = '',
@@ -154,20 +235,37 @@ module.exports = async (
 
 
         /*
-        |--------------------------------------------------------------------------
-        | SPECIFIC MOVIE
-        |--------------------------------------------------------------------------
-        */
+         * ==================================================
+         * SPECIFIC DETAIL
+         * ==================================================
+         *
+         * /api/movies?id=969681&type=movie
+         *
+         * /api/movies?id=20&type=tv
+         */
 
         if (id) {
 
-            const movie =
+            const mediaType =
+                String(type).toLowerCase() === 'tv'
+                    ? 'tv'
+                    : 'movie';
+
+
+            const details =
                 await tmdbRequest(
-                    `/movie/${encodeURIComponent(id)}`,
+                    `/${mediaType}/${encodeURIComponent(id)}`,
                     {
                         language
                     }
                 );
+
+
+            const normalized =
+                mediaType === 'tv'
+                    ? normalizeTV(details)
+                    : normalizeMovie(details);
+
 
             return res.status(200).json({
 
@@ -175,18 +273,25 @@ module.exports = async (
 
                 mode: 'detail',
 
-                movie:
-                    normalizeMovie(movie)
+                movie: normalized
 
             });
+
         }
 
 
         /*
-        |--------------------------------------------------------------------------
-        | SEARCH
-        |--------------------------------------------------------------------------
-        */
+         * ==================================================
+         * SEARCH
+         * ==================================================
+         *
+         * Searches BOTH movies and TV.
+         *
+         * Example:
+         *
+         * /api/movies?query=naruto
+         *
+         */
 
         if (
             String(query).trim()
@@ -195,23 +300,89 @@ module.exports = async (
             const searchQuery =
                 String(query).trim();
 
-            const data =
+
+            /*
+             * Search movies
+             */
+
+            const movieData =
                 await tmdbRequest(
                     '/search/movie',
                     {
-                        query:
-                            searchQuery,
-
+                        query: searchQuery,
                         language,
-
                         region,
-
                         page,
-
-                        include_adult:
-                            'false'
+                        include_adult: 'false'
                     }
                 );
+
+
+            /*
+             * Search TV
+             */
+
+            const tvData =
+                await tmdbRequest(
+                    '/search/tv',
+                    {
+                        query: searchQuery,
+                        language,
+                        page,
+                        include_adult: 'false'
+                    }
+                );
+
+
+            /*
+             * Normalize both
+             */
+
+            const movies =
+                Array.isArray(movieData.results)
+                    ? movieData.results.map(
+                        normalizeMovie
+                    )
+                    : [];
+
+
+            const tvShows =
+                Array.isArray(tvData.results)
+                    ? tvData.results.map(
+                        normalizeTV
+                    )
+                    : [];
+
+
+            /*
+             * Combine results
+             */
+
+            const combined =
+                [
+                    ...movies,
+                    ...tvShows
+                ];
+
+
+            /*
+             * Sort by popularity
+             */
+
+            combined.sort(
+                (a, b) => {
+
+                    const ratingA =
+                        Number(a.rating || 0);
+
+                    const ratingB =
+                        Number(b.rating || 0);
+
+                    return ratingB - ratingA;
+
+                }
+            );
+
 
             return res.status(200).json({
 
@@ -219,38 +390,32 @@ module.exports = async (
 
                 mode: 'search',
 
-                query:
-                    searchQuery,
+                query: searchQuery,
 
                 page:
-                    data.page || 1,
+                    Number(page) || 1,
 
                 totalPages:
-                    data.total_pages || 1,
+                    Math.max(
+                        movieData.total_pages || 1,
+                        tvData.total_pages || 1
+                    ),
 
                 totalResults:
-                    data.total_results || 0,
+                    combined.length,
 
-                movies:
-                    Array.isArray(data.results)
-                        ? data.results.map(
-                            normalizeMovie
-                        )
-                        : []
+                movies: combined
 
             });
+
         }
 
 
         /*
-        |--------------------------------------------------------------------------
-        | GENRE
-        |--------------------------------------------------------------------------
-        |
-        | Example:
-        | /api/movies?genre=28
-        |
-        */
+         * ==================================================
+         * MOVIE GENRE
+         * ==================================================
+         */
 
         if (
             String(genre).trim()
@@ -261,9 +426,7 @@ module.exports = async (
                     '/discover/movie',
                     {
                         language,
-
                         region,
-
                         page,
 
                         with_genres:
@@ -279,6 +442,7 @@ module.exports = async (
                             'false'
                     }
                 );
+
 
             return res.status(200).json({
 
@@ -306,14 +470,15 @@ module.exports = async (
                         : []
 
             });
+
         }
 
 
         /*
-        |--------------------------------------------------------------------------
-        | CATEGORIES
-        |--------------------------------------------------------------------------
-        */
+         * ==================================================
+         * MOVIE CATEGORIES
+         * ==================================================
+         */
 
         let endpoint =
             '/movie/popular';
@@ -383,6 +548,7 @@ module.exports = async (
                     'popular';
 
                 break;
+
         }
 
 
@@ -391,9 +557,7 @@ module.exports = async (
                 endpoint,
                 {
                     language,
-
                     region,
-
                     page,
 
                     include_adult:
@@ -432,12 +596,15 @@ module.exports = async (
 
         });
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         console.error(
             'TMDB metadata error:',
             error
         );
+
 
         return res
             .status(500)
@@ -449,5 +616,7 @@ module.exports = async (
                     'Unable to retrieve movie metadata'
 
             });
+
     }
+
 };
