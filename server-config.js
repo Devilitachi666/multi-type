@@ -123,4 +123,3 @@ module.exports = {
 
   cache_ttl: 3600
 };
-```
