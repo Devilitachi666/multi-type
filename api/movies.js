@@ -293,122 +293,140 @@ module.exports = async (
          *
          */
 
-        if (
-            String(query).trim()
-        ) {
+        if (String(query).trim()) {
 
-            const searchQuery =
-                String(query).trim();
+    const searchQuery =
+        String(query).trim();
 
+    /*
+     * --------------------------------------------------
+     * SEARCH MOVIES
+     * --------------------------------------------------
+     */
 
-            /*
-             * Search movies
-             */
-
-            const movieData =
-                await tmdbRequest(
-                    '/search/movie',
-                    {
-                        query: searchQuery,
-                        language,
-                        region,
-                        page,
-                        include_adult: 'false'
-                    }
-                );
-
-
-            /*
-             * Search TV
-             */
-
-            const tvData =
-                await tmdbRequest(
-                    '/search/tv',
-                    {
-                        query: searchQuery,
-                        language,
-                        page,
-                        include_adult: 'false'
-                    }
-                );
-
-
-            /*
-             * Normalize both
-             */
-
-            const movies =
-                Array.isArray(movieData.results)
-                    ? movieData.results.map(
-                        normalizeMovie
-                    )
-                    : [];
-
-
-            const tvShows =
-                Array.isArray(tvData.results)
-                    ? tvData.results.map(
-                        normalizeTV
-                    )
-                    : [];
-
-
-            /*
-             * Combine results
-             */
-
-            const combined =
-                [
-                    ...movies,
-                    ...tvShows
-                ];
-
-
-            /*
-             * Sort by popularity
-             */
-
-            combined.sort(
-                (a, b) => {
-
-                    const ratingA =
-                        Number(a.rating || 0);
-
-                    const ratingB =
-                        Number(b.rating || 0);
-
-                    return ratingB - ratingA;
-
-                }
-            );
-
-
-            return res.status(200).json({
-
-                success: true,
-
-                mode: 'search',
-
+    const movieData =
+        await tmdbRequest(
+            '/search/movie',
+            {
                 query: searchQuery,
+                language,
+                region,
+                page,
+                include_adult: 'false'
+            }
+        );
 
-                page:
-                    Number(page) || 1,
 
-                totalPages:
-                    Math.max(
-                        movieData.total_pages || 1,
-                        tvData.total_pages || 1
-                    ),
+    /*
+     * --------------------------------------------------
+     * SEARCH TV SERIES
+     * --------------------------------------------------
+     */
 
-                totalResults:
-                    combined.length,
+    const tvData =
+        await tmdbRequest(
+            '/search/tv',
+            {
+                query: searchQuery,
+                language,
+                page,
+                include_adult: 'false'
+            }
+        );
 
-                movies: combined
 
-            });
+    /*
+     * --------------------------------------------------
+     * NORMALIZE MOVIES
+     * --------------------------------------------------
+     */
 
+    const movies =
+        Array.isArray(movieData.results)
+            ? movieData.results.map(
+                normalizeMovie
+            )
+            : [];
+
+
+    /*
+     * --------------------------------------------------
+     * NORMALIZE TV SERIES
+     * --------------------------------------------------
+     */
+
+    const tvShows =
+        Array.isArray(tvData.results)
+            ? tvData.results.map(
+                normalizeTV
+            )
+            : [];
+
+
+    /*
+     * --------------------------------------------------
+     * COMBINE MOVIES + TV
+     * --------------------------------------------------
+     */
+
+    const combined = [
+        ...movies,
+        ...tvShows
+    ];
+
+
+    /*
+     * --------------------------------------------------
+     * SORT BY RATING
+     * --------------------------------------------------
+     */
+
+    combined.sort(
+        (a, b) => {
+
+            const ratingA =
+                Number(a.rating || 0);
+
+            const ratingB =
+                Number(b.rating || 0);
+
+            return ratingB - ratingA;
         }
+    );
+
+
+    /*
+     * --------------------------------------------------
+     * RESPONSE
+     * --------------------------------------------------
+     */
+
+    return res.status(200).json({
+
+        success: true,
+
+        mode: 'search',
+
+        query: searchQuery,
+
+        page:
+            Number(page) || 1,
+
+        totalPages:
+            Math.max(
+                movieData.total_pages || 1,
+                tvData.total_pages || 1
+            ),
+
+        totalResults:
+            combined.length,
+
+        movies:
+            combined
+
+    });
+
+}
 
 
         /*
