@@ -491,7 +491,7 @@ if (
  * Anime = Japanese animated TV series.
  */
 
-if (
+      if (
     String(req.query.anime).toLowerCase() === 'true'
 ) {
 
@@ -500,34 +500,18 @@ if (
             '/discover/tv',
             {
                 language,
-
                 page,
 
-                /*
-                 * Animation genre
-                 */
                 with_genres: '16',
 
-                /*
-                 * Japanese original productions
-                 */
                 with_original_language: 'ja',
 
-                /*
-                 * Japan
-                 */
                 with_origin_country: 'JP',
 
-                /*
-                 * Popular anime first
-                 */
                 sort_by:
                     'popularity.desc',
 
-                /*
-                 * Avoid very low-quality results
-                 */
-                vote_count.gte: '10',
+                'vote_count.gte': '10',
 
                 include_adult:
                     'false'
