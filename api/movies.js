@@ -430,6 +430,59 @@ module.exports = async (
 
 
         /*
+ * ==================================================
+ * TV / WEB SERIES
+ * ==================================================
+ *
+ * /api/movies?type=tv
+ *
+ * Returns popular TV/web-series results.
+ */
+
+if (
+    String(type).toLowerCase() === 'tv'
+) {
+
+    const tvData =
+        await tmdbRequest(
+            '/tv/popular',
+            {
+                language,
+                page
+            }
+        );
+
+
+    return res.status(200).json({
+
+        success: true,
+
+        mode: 'tv',
+
+        type: 'tv',
+
+        page:
+            tvData.page || 1,
+
+        totalPages:
+            tvData.total_pages || 1,
+
+        totalResults:
+            tvData.total_results || 0,
+
+        movies:
+            Array.isArray(tvData.results)
+                ? tvData.results.map(
+                    normalizeTV
+                )
+                : []
+
+    });
+
+}
+
+
+        /*
          * ==================================================
          * MOVIE GENRE
          * ==================================================
