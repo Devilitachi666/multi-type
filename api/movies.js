@@ -481,6 +481,73 @@ if (
 
 }
 
+        /*
+ * ==================================================
+ * LATEST ANIME
+ * ==================================================
+ *
+ * /api/movies?anime=true
+ *
+ * Uses TMDB discover/tv with the Animation genre
+ * and returns the results in data.movies.
+ */
+
+if (
+    String(req.query.anime).toLowerCase() === 'true'
+) {
+
+    const animeData =
+        await tmdbRequest(
+            '/discover/tv',
+            {
+                language,
+                page,
+
+                /*
+                 * TMDB Animation genre
+                 */
+                with_genres: '16',
+
+                /*
+                 * Latest/popular anime first
+                 */
+                sort_by:
+                    'popularity.desc',
+
+                include_adult:
+                    'false'
+            }
+        );
+
+
+    return res.status(200).json({
+
+        success: true,
+
+        mode: 'anime',
+
+        page:
+            animeData.page || 1,
+
+        totalPages:
+            animeData.total_pages || 1,
+
+        totalResults:
+            animeData.total_results || 0,
+
+        movies:
+            Array.isArray(
+                animeData.results
+            )
+                ? animeData.results.map(
+                    normalizeTV
+                )
+                : []
+
+    });
+
+}
+
 
         /*
          * ==================================================
