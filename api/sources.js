@@ -2,21 +2,32 @@ const sourceManager = require('../source-manager');
 
 module.exports = async (req, res) => {
     // CORS
-    const allowedOrigin = 'https://freemoviedekhlo.blogspot.com';
-    const requestOrigin = req.headers.origin;
+const allowedOrigin = 'https://maroonflix.blogspot.com';
+const requestOrigin = req.headers.origin;
 
-    if (requestOrigin === allowedOrigin) {
-        res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
-    }
+if (requestOrigin === allowedOrigin) {
+    res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
+}
 
-    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    res.setHeader('Vary', 'Origin');
+res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, OPTIONS'
+);
 
-    // Handle preflight
-    if (req.method === 'OPTIONS') {
-        return res.status(204).end();
-    }
+res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Content-Type'
+);
+
+res.setHeader(
+    'Vary',
+    'Origin'
+);
+
+// Handle preflight
+if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+}
 
     // GET only
     if (req.method !== 'GET') {
