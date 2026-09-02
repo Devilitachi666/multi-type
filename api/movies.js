@@ -632,9 +632,9 @@ if (
  * RECENTLY ADDED SEASONS
  * ==================================================
  *
- * /api/movies?recentSeasons=true
+ * /api/movies?seasons=true&page=1
  *
- * Returns TV shows with recently aired content.
+ * Returns individual TV seasons.
  */
 
 if (
@@ -643,17 +643,19 @@ if (
     ).toLowerCase() === 'true'
 ) {
 
-    const recentSeasonsData =
+    /*
+     * --------------------------------------------------
+     * 1. GET RECENT TV SHOWS
+     * --------------------------------------------------
+     */
+
+    const tvData =
         await tmdbRequest(
             '/discover/tv',
             {
                 language,
 
                 page,
-
-                /*
-                 * Shows with recent episodes / activity.
-                 */
 
                 sort_by:
                     'first_air_date.desc',
@@ -667,31 +669,313 @@ if (
         );
 
 
+    const shows =
+        Array.isArray(
+            tvData.results
+        )
+            ? tvData.results
+            : [];
+
+
+    /*
+     * --------------------------------------------------
+     * 2. FETCH DETAILS FOR EACH SHOW
+     * --------------------------------------------------
+     *
+     * Limit results to avoid making too many
+     * TMDB requests in one API call.
+     */
+
+    const showsToProcess =
+        shows.slice(
+            0,
+            10
+        );
+
+
+    const seasonGroups =
+        await Promise.all(
+
+            showsToProcess.map(
+                async show => {
+
+                    try {
+
+                        const details =
+                            await tmdbRequest(
+                                `/tv/${encodeURIComponent(show.id)}`,
+                                {
+                                    language
+                                }
+                            );
+
+
+                        const seasons =
+                            Array.isArray(
+                                details.seasons
+                            )
+                                ? details.seasons
+                                : [];
+
+
+                        /*
+                         * --------------------------------------------------
+                         * 3. CONVERT SHOW SEASONS TO CARDS
+                         * --------------------------------------------------
+                         */
+
+                        return seasons
+                            .filter(
+                                season =>
+                                    Number(
+                                        season.season_number
+                                    ) > 0
+                            )
+                            .map(
+                                season => {
+
+                                    const airDate =
+                                        season.air_date ||
+                                        '';
+
+                                    return {
+
+                                        /*
+                                         * Parent show
+                                         */
+
+                                        id:
+                                            String(
+                                                show.id
+                                            ),
+
+                                        type:
+                                            'tv',
+
+
+                                        /*
+                                         * Parent show information
+                                         */
+
+                                        parentShowId:
+                                            String(
+                                                show.id
+                                            ),
+
+                                        parentShowName:
+                                            details.name ||
+                                            details.original_name ||
+                                            show.name ||
+                                            'Untitled',
+
+
+                                        /*
+                                         * Season information
+                                         */
+
+                                        season:
+                                            Number(
+                                                season.season_number
+                                            ),
+
+                                        seasonNumber:
+                                            Number(
+                                                season.season_number
+                                            ),
+
+                                        seasonTitle:
+                                            season.name ||
+                                            `Season ${season.season_number}`,
+
+
+                                        /*
+                                         * Card title
+                                         */
+
+                                        title:
+                                            `${details.name || show.name || 'Untitled'} — ${season.name || `Season ${season.season_number}`}`,
+
+
+                                        /*
+                                         * Description
+                                         */
+
+                                        overview:
+                                            season.overview ||
+                                            details.overview ||
+                                            '',
+
+
+                                        /*
+                                         * Dates
+                                         */
+
+                                        releaseDate:
+                                            airDate,
+
+                                        year:
+                                            airDate
+                                                ? airDate.slice(
+                                                    0,
+                                                    4
+                                                )
+                                                : '',
+
+
+                                        /*
+                                         * Poster
+                                         */
+
+                                        poster:
+                                            season.poster_path
+                                                ? `https://image.tmdb.org/t/p/w500${season.poster_path}`
+                                                : (
+                                                    show.poster_path
+                                                        ? `https://image.tmdb.org/t/p/w500${show.poster_path}`
+                                                        : null
+                                                ),
+
+
+                                        /*
+                                         * Backdrop
+                                         */
+
+                                        backdrop:
+                                            details.backdrop_path
+                                                ? `https://image.tmdb.org/t/p/w1280${details.backdrop_path}`
+                                                : null,
+
+
+                                        /*
+                                         * Rating
+                                         */
+
+                                        rating:
+                                            Number(
+                                                details.vote_average ||
+                                                show.vote_average ||
+                                                0
+                                            ),
+
+
+                                        /*
+                                         * Useful metadata
+                                         */
+
+                                        episodeCount:
+                                            Number(
+                                                season.episode_count ||
+                                                0
+                                            )
+
+                                    };
+
+                                }
+                            );
+
+                    }
+
+                    catch (
+                        showError
+                    ) {
+
+                        console.error(
+                            '[Seasons] Failed to load show:',
+                            show.id,
+                            showError
+                        );
+
+
+                        return [];
+
+                    }
+
+                }
+            )
+
+        );
+
+
+    /*
+     * --------------------------------------------------
+     * 4. FLATTEN ALL SEASONS
+     * --------------------------------------------------
+     */
+
+    const seasons =
+        seasonGroups.flat();
+
+
+    /*
+     * --------------------------------------------------
+     * 5. SORT BY SEASON AIR DATE
+     * --------------------------------------------------
+     */
+
+    seasons.sort(
+        (
+            a,
+            b
+        ) => {
+
+            const dateA =
+                new Date(
+                    a.releaseDate ||
+                    0
+                ).getTime();
+
+
+            const dateB =
+                new Date(
+                    b.releaseDate ||
+                    0
+                ).getTime();
+
+
+            return (
+                dateB -
+                dateA
+            );
+
+        }
+    );
+
+
+    /*
+     * --------------------------------------------------
+     * 6. RETURN SEASONS
+     * --------------------------------------------------
+     */
+
     return res.status(200).json({
 
-        success: true,
+        success:
+            true,
 
-        mode: 'recent-seasons',
+        mode:
+            'seasons',
 
-        type: 'tv',
+        type:
+            'tv',
 
         page:
-            recentSeasonsData.page || 1,
+            Number(
+                tvData.page ||
+                page ||
+                1
+            ),
 
         totalPages:
-            recentSeasonsData.total_pages || 1,
+            Number(
+                tvData.total_pages ||
+                1
+            ),
 
         totalResults:
-            recentSeasonsData.total_results || 0,
+            seasons.length,
 
         movies:
-            Array.isArray(
-                recentSeasonsData.results
-            )
-                ? recentSeasonsData.results.map(
-                    normalizeTV
-                )
-                : []
+            seasons
 
     });
 
