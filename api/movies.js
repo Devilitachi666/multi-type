@@ -547,6 +547,86 @@ if (
 
 }
 
+        /*
+ * ==================================================
+ * LATEST CARTOONS
+ * ==================================================
+ *
+ * /api/movies?cartoon=true
+ *
+ * Animated content excluding Japanese anime as much
+ * as possible.
+ */
+
+if (
+    String(req.query.cartoon).toLowerCase() === 'true'
+) {
+
+    const cartoonData =
+        await tmdbRequest(
+            '/discover/movie',
+            {
+                language,
+                region,
+                page,
+
+                /*
+                 * Animation genre
+                 */
+
+                with_genres:
+                    '16',
+
+                /*
+                 * Avoid Japanese anime movies.
+                 */
+
+                without_original_language:
+                    'ja',
+
+                sort_by:
+                    'popularity.desc',
+
+                'vote_count.gte':
+                    '10',
+
+                include_adult:
+                    'false',
+
+                include_video:
+                    'false'
+            }
+        );
+
+
+    return res.status(200).json({
+
+        success: true,
+
+        mode: 'cartoon',
+
+        page:
+            cartoonData.page || 1,
+
+        totalPages:
+            cartoonData.total_pages || 1,
+
+        totalResults:
+            cartoonData.total_results || 0,
+
+        movies:
+            Array.isArray(
+                cartoonData.results
+            )
+                ? cartoonData.results.map(
+                    normalizeMovie
+                )
+                : []
+
+    });
+
+}
+
 
         /*
          * ==================================================
