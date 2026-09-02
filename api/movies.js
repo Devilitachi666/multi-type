@@ -639,7 +639,7 @@ if (
 
 if (
     String(
-        req.query.recentSeasons
+        req.query.seasons
     ).toLowerCase() === 'true'
 ) {
 
