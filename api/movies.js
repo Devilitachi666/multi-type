@@ -627,6 +627,76 @@ if (
 
 }
 
+        /*
+ * ==================================================
+ * RECENTLY ADDED SEASONS
+ * ==================================================
+ *
+ * /api/movies?recentSeasons=true
+ *
+ * Returns TV shows with recently aired content.
+ */
+
+if (
+    String(
+        req.query.recentSeasons
+    ).toLowerCase() === 'true'
+) {
+
+    const recentSeasonsData =
+        await tmdbRequest(
+            '/discover/tv',
+            {
+                language,
+
+                page,
+
+                /*
+                 * Shows with recent episodes / activity.
+                 */
+
+                sort_by:
+                    'first_air_date.desc',
+
+                'vote_count.gte':
+                    '10',
+
+                include_adult:
+                    'false'
+            }
+        );
+
+
+    return res.status(200).json({
+
+        success: true,
+
+        mode: 'recent-seasons',
+
+        type: 'tv',
+
+        page:
+            recentSeasonsData.page || 1,
+
+        totalPages:
+            recentSeasonsData.total_pages || 1,
+
+        totalResults:
+            recentSeasonsData.total_results || 0,
+
+        movies:
+            Array.isArray(
+                recentSeasonsData.results
+            )
+                ? recentSeasonsData.results.map(
+                    normalizeTV
+                )
+                : []
+
+    });
+
+}
+
 
         /*
          * ==================================================
