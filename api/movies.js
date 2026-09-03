@@ -244,7 +244,7 @@ module.exports = async (
          * /api/movies?id=20&type=tv
          */
 
-    if (id) {
+      if (id) {
 
     const mediaType =
         String(type).toLowerCase() === 'tv'
@@ -253,33 +253,238 @@ module.exports = async (
 
 
     /*
-     * --------------------------------------------------
-     * LOAD MAIN DETAILS
-     * --------------------------------------------------
+     * ==================================================
+     * TV SERIES DETAIL + SEASONS + EPISODES
+     * ==================================================
      */
 
-    const details =
-        await tmdbRequest(
-            `/${mediaType}/${encodeURIComponent(id)}`,
-            {
-                language
+    if (mediaType === 'tv') {
+
+        /*
+         * GET SHOW DETAILS
+         */
+
+        const details =
+            await tmdbRequest(
+                `/tv/${encodeURIComponent(id)}`,
+                {
+                    language
+                }
+            );
+
+
+        const normalized =
+            normalizeTV(details);
+
+
+        /*
+         * --------------------------------------------------
+         * AVAILABLE SEASONS
+         * --------------------------------------------------
+         */
+
+        const availableSeasons =
+            Array.isArray(details.seasons)
+                ? details.seasons
+                    .filter(
+                        season =>
+                            Number(
+                                season.season_number
+                            ) > 0
+                    )
+                    .map(
+                        season => ({
+                            id:
+                                String(id),
+
+                            parentShowId:
+                                String(id),
+
+                            parentShowName:
+                                details.name ||
+                                details.original_name ||
+                                'Untitled',
+
+                            seasonNumber:
+                                Number(
+                                    season.season_number
+                                ),
+
+                            seasonTitle:
+                                season.name ||
+                                `Season ${season.season_number}`,
+
+                            title:
+                                season.name ||
+                                `Season ${season.season_number}`,
+
+                            overview:
+                                season.overview || '',
+
+                            releaseDate:
+                                season.air_date || '',
+
+                            year:
+                                season.air_date
+                                    ? season.air_date.slice(
+                                        0,
+                                        4
+                                    )
+                                    : '',
+
+                            episodeCount:
+                                Number(
+                                    season.episode_count || 0
+                                ),
+
+                            poster:
+                                season.poster_path
+                                    ? `https://image.tmdb.org/t/p/w500${season.poster_path}`
+                                    : (
+                                        details.poster_path
+                                            ? `https://image.tmdb.org/t/p/w500${details.poster_path}`
+                                            : null
+                                    )
+                        })
+                    )
+                : [];
+
+
+        /*
+         * --------------------------------------------------
+         * SELECTED SEASON
+         *
+         * URL example:
+         *
+         * /api/movies?id=46260&type=tv&season=1
+         * --------------------------------------------------
+         */
+
+        let selectedSeasonNumber =
+            req.query &&
+            req.query.season !== undefined &&
+            req.query.season !== null &&
+            req.query.season !== ''
+                ? Number(req.query.season)
+                : null;
+
+
+        /*
+         * DEFAULT TO FIRST AVAILABLE SEASON
+         */
+
+        if (
+            !selectedSeasonNumber &&
+            availableSeasons.length > 0
+        ) {
+
+            selectedSeasonNumber =
+                availableSeasons[0]
+                    .seasonNumber;
+
+        }
+
+
+        /*
+         * --------------------------------------------------
+         * EPISODES
+         * --------------------------------------------------
+         */
+
+        let episodes = [];
+
+
+        if (
+            selectedSeasonNumber !== null &&
+            Number.isFinite(
+                selectedSeasonNumber
+            )
+        ) {
+
+            try {
+
+                const seasonData =
+                    await tmdbRequest(
+                        `/tv/${encodeURIComponent(
+                            id
+                        )}/season/${encodeURIComponent(
+                            selectedSeasonNumber
+                        )}`,
+                        {
+                            language
+                        }
+                    );
+
+
+                episodes =
+                    Array.isArray(
+                        seasonData.episodes
+                    )
+                        ? seasonData.episodes.map(
+                            episode => ({
+
+                                id:
+                                    Number(
+                                        episode.id
+                                    ),
+
+                                episodeNumber:
+                                    Number(
+                                        episode.episode_number
+                                    ),
+
+                                seasonNumber:
+                                    Number(
+                                        episode.season_number ||
+                                        selectedSeasonNumber
+                                    ),
+
+                                title:
+                                    episode.name ||
+                                    `Episode ${episode.episode_number}`,
+
+                                overview:
+                                    episode.overview || '',
+
+                                airDate:
+                                    episode.air_date || '',
+
+                                runtime:
+                                    Number(
+                                        episode.runtime || 0
+                                    ),
+
+                                still:
+                                    episode.still_path
+                                        ? `https://image.tmdb.org/t/p/w500${episode.still_path}`
+                                        : null
+
+                            })
+                        )
+                        : [];
+
+
             }
-        );
+
+            catch (seasonError) {
+
+                console.error(
+                    '[TV Season] Failed:',
+                    seasonError
+                );
+
+                episodes = [];
+
+            }
+
+        }
 
 
-    const normalized =
-        mediaType === 'tv'
-            ? normalizeTV(details)
-            : normalizeMovie(details);
-
-
-    /*
-     * --------------------------------------------------
-     * MOVIE DETAIL
-     * --------------------------------------------------
-     */
-
-    if (mediaType === 'movie') {
+        /*
+         * ==================================================
+         * TV DETAIL RESPONSE
+         * ==================================================
+         */
 
         return res.status(200).json({
 
@@ -287,197 +492,24 @@ module.exports = async (
 
             mode: 'detail',
 
-            movie: normalized
+            type: 'tv',
+
+            movie:
+                normalized,
+
+            seasons:
+                availableSeasons,
+
+            selectedSeason:
+                selectedSeasonNumber,
+
+            episodes:
+                episodes
 
         });
 
     }
 
-
-    /*
-     * ==================================================
-     * TV SHOW SEASONS
-     * ==================================================
-     */
-
-    const availableSeasons =
-        Array.isArray(details.seasons)
-            ? details.seasons
-                .filter(
-                    item =>
-                        Number(item.season_number) > 0
-                )
-                .map(
-                    item => ({
-
-                        seasonNumber:
-                            Number(
-                                item.season_number
-                            ),
-
-                        title:
-                            item.name ||
-                            `Season ${item.season_number}`,
-
-                        overview:
-                            item.overview || '',
-
-                        airDate:
-                            item.air_date || '',
-
-                        episodeCount:
-                            Number(
-                                item.episode_count || 0
-                            ),
-
-                        poster:
-                            item.poster_path
-                                ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-                                : (
-                                    details.poster_path
-                                        ? `https://image.tmdb.org/t/p/w500${details.poster_path}`
-                                        : null
-                                )
-
-                    })
-                )
-            : [];
-
-
-    /*
-     * --------------------------------------------------
-     * SELECT SEASON
-     * --------------------------------------------------
-     */
-
-    let selectedSeasonNumber =
-        Number(
-            req.query.season ||
-            req.query.s ||
-            0
-        );
-
-
-    if (
-        !selectedSeasonNumber &&
-        availableSeasons.length
-    ) {
-
-        selectedSeasonNumber =
-            availableSeasons[0].seasonNumber;
-
-    }
-
-
-    /*
-     * --------------------------------------------------
-     * LOAD SELECTED SEASON EPISODES
-     * --------------------------------------------------
-     */
-
-    let episodes = [];
-
-
-    if (selectedSeasonNumber > 0) {
-
-        try {
-
-            const seasonData =
-                await tmdbRequest(
-                    `/tv/${encodeURIComponent(id)}/season/${selectedSeasonNumber}`,
-                    {
-                        language
-                    }
-                );
-
-
-            episodes =
-                Array.isArray(
-                    seasonData.episodes
-                )
-                    ? seasonData.episodes.map(
-                        episode => ({
-
-                            id:
-                                Number(
-                                    episode.id
-                                ),
-
-                            episodeNumber:
-                                Number(
-                                    episode.episode_number
-                                ),
-
-                            seasonNumber:
-                                Number(
-                                    episode.season_number ||
-                                    selectedSeasonNumber
-                                ),
-
-                            title:
-                                episode.name ||
-                                `Episode ${episode.episode_number}`,
-
-                            overview:
-                                episode.overview || '',
-
-                            airDate:
-                                episode.air_date || '',
-
-                            runtime:
-                                Number(
-                                    episode.runtime || 0
-                                ),
-
-                            still:
-                                episode.still_path
-                                    ? `https://image.tmdb.org/t/p/w500${episode.still_path}`
-                                    : null
-
-                        })
-                    )
-                    : [];
-
-        }
-
-        catch (seasonError) {
-
-            console.error(
-                '[TV Season] Failed:',
-                seasonError
-            );
-
-        }
-
-    }
-
-
-    /*
-     * ==================================================
-     * TV DETAIL RESPONSE
-     * ==================================================
-     */
-
-    return res.status(200).json({
-
-        success: true,
-
-        mode: 'detail',
-
-        movie: normalized,
-
-        seasons:
-            availableSeasons,
-
-        selectedSeason:
-            selectedSeasonNumber,
-
-        episodes:
-            episodes
-
-    });
-
-}
 
     /*
      * ==================================================
@@ -516,8 +548,7 @@ module.exports = async (
 
     });
 
-}
-
+} 
 
         /*
          * ==================================================
