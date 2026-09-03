@@ -244,40 +244,501 @@ module.exports = async (
          * /api/movies?id=20&type=tv
          */
 
-        if (id) {
+     if (id) {
 
-            const mediaType =
-                String(type).toLowerCase() === 'tv'
-                    ? 'tv'
-                    : 'movie';
+    const mediaType =
+        String(type).toLowerCase() === 'tv'
+            ? 'tv'
+            : 'movie';
 
 
-            const details =
+    /*
+     * ==================================================
+     * TV SERIES
+     * ==================================================
+     */
+
+    if (mediaType === 'tv') {
+
+        /*
+         * --------------------------------------------------
+         * GET TV SHOW DETAILS
+         * --------------------------------------------------
+         */
+
+        const details =
+            await tmdbRequest(
+                `/tv/${encodeURIComponent(id)}`,
+                {
+                    language
+                }
+            );
+
+
+        const normalizedShow =
+            normalizeTV(details);
+
+
+        /*
+         * --------------------------------------------------
+         * CHECK IF A SPECIFIC SEASON WAS REQUESTED
+         *
+         * Example:
+         *
+         * /api/movies?id=123&type=tv&season=1
+         * --------------------------------------------------
+         */
+
+        const requestedSeason =
+            req.query &&
+            req.query.season !== undefined &&
+            req.query.season !== null &&
+            req.query.season !== ''
+                ? Number(req.query.season)
+                : null;
+
+
+        /*
+         * ==================================================
+         * SPECIFIC SEASON + EPISODES
+         * ==================================================
+         */
+
+        if (
+            requestedSeason !== null &&
+            Number.isFinite(requestedSeason) &&
+            requestedSeason >= 0
+        ) {
+
+            const seasonDetails =
                 await tmdbRequest(
-                    `/${mediaType}/${encodeURIComponent(id)}`,
+                    `/tv/${encodeURIComponent(
+                        id
+                    )}/season/${encodeURIComponent(
+                        requestedSeason
+                    )}`,
                     {
                         language
                     }
                 );
 
 
-            const normalized =
-                mediaType === 'tv'
-                    ? normalizeTV(details)
-                    : normalizeMovie(details);
+            const episodes =
+                Array.isArray(
+                    seasonDetails.episodes
+                )
+                    ? seasonDetails.episodes.map(
+                        episode => {
 
+                            const airDate =
+                                episode.air_date ||
+                                '';
+
+                            return {
+
+                                id:
+                                    String(
+                                        episode.id
+                                    ),
+
+                                type:
+                                    'episode',
+
+
+                                /*
+                                 * Parent show
+                                 */
+
+                                showId:
+                                    String(id),
+
+                                parentShowId:
+                                    String(id),
+
+                                showName:
+                                    details.name ||
+                                    details.original_name ||
+                                    'Untitled',
+
+                                parentShowName:
+                                    details.name ||
+                                    details.original_name ||
+                                    'Untitled',
+
+
+                                /*
+                                 * Season information
+                                 */
+
+                                season:
+                                    Number(
+                                        requestedSeason
+                                    ),
+
+                                seasonNumber:
+                                    Number(
+                                        requestedSeason
+                                    ),
+
+                                seasonTitle:
+                                    seasonDetails.name ||
+                                    `Season ${requestedSeason}`,
+
+
+                                /*
+                                 * Episode information
+                                 */
+
+                                episode:
+                                    Number(
+                                        episode.episode_number
+                                    ),
+
+                                episodeNumber:
+                                    Number(
+                                        episode.episode_number
+                                    ),
+
+                                title:
+                                    episode.name ||
+                                    `Episode ${episode.episode_number}`,
+
+                                episodeTitle:
+                                    episode.name ||
+                                    `Episode ${episode.episode_number}`,
+
+
+                                overview:
+                                    episode.overview ||
+                                    '',
+
+
+                                releaseDate:
+                                    airDate,
+
+                                year:
+                                    airDate
+                                        ? airDate.slice(
+                                            0,
+                                            4
+                                        )
+                                        : '',
+
+
+                                rating:
+                                    Number(
+                                        episode.vote_average ||
+                                        0
+                                    ),
+
+                                voteCount:
+                                    Number(
+                                        episode.vote_count ||
+                                        0
+                                    ),
+
+
+                                /*
+                                 * Episode image
+                                 */
+
+                                still:
+                                    episode.still_path
+                                        ? `https://image.tmdb.org/t/p/w780${episode.still_path}`
+                                        : null,
+
+                                poster:
+                                    episode.still_path
+                                        ? `https://image.tmdb.org/t/p/w780${episode.still_path}`
+                                        : (
+                                            details.poster_path
+                                                ? `https://image.tmdb.org/t/p/w500${details.poster_path}`
+                                                : null
+                                        ),
+
+
+                                /*
+                                 * Runtime
+                                 */
+
+                                runtime:
+                                    Number(
+                                        episode.runtime ||
+                                        0
+                                    )
+
+                            };
+
+                        }
+                    )
+                    : [];
+
+
+            /*
+             * --------------------------------------------------
+             * RETURN SELECTED SEASON
+             * --------------------------------------------------
+             */
 
             return res.status(200).json({
 
-                success: true,
+                success:
+                    true,
 
-                mode: 'detail',
+                mode:
+                    'season',
 
-                movie: normalized
+                type:
+                    'tv',
+
+
+                movie:
+                    normalizedShow,
+
+
+                show:
+                    normalizedShow,
+
+
+                season: {
+
+                    seasonNumber:
+                        Number(
+                            requestedSeason
+                        ),
+
+                    season:
+                        Number(
+                            requestedSeason
+                        ),
+
+                    title:
+                        seasonDetails.name ||
+                        `Season ${requestedSeason}`,
+
+                    overview:
+                        seasonDetails.overview ||
+                        '',
+
+                    airDate:
+                        seasonDetails.air_date ||
+                        '',
+
+                    episodeCount:
+                        Number(
+                            seasonDetails.episodes
+                                ? seasonDetails.episodes.length
+                                : 0
+                        ),
+
+                    poster:
+                        seasonDetails.poster_path
+                            ? `https://image.tmdb.org/t/p/w500${seasonDetails.poster_path}`
+                            : (
+                                details.poster_path
+                                    ? `https://image.tmdb.org/t/p/w500${details.poster_path}`
+                                    : null
+                            )
+
+                },
+
+
+                episodes:
+                    episodes
 
             });
 
         }
+
+
+        /*
+         * ==================================================
+         * TV SHOW DETAIL + ALL SEASONS
+         * ==================================================
+         */
+
+        const seasons =
+            Array.isArray(
+                details.seasons
+            )
+                ? details.seasons
+                    .filter(
+                        seasonItem =>
+                            Number(
+                                seasonItem.season_number
+                            ) >= 0
+                    )
+                    .map(
+                        seasonItem => {
+
+                            const airDate =
+                                seasonItem.air_date ||
+                                '';
+
+                            return {
+
+                                /*
+                                 * Parent show
+                                 */
+
+                                id:
+                                    String(id),
+
+                                type:
+                                    'tv',
+
+                                showId:
+                                    String(id),
+
+                                parentShowId:
+                                    String(id),
+
+                                showName:
+                                    details.name ||
+                                    details.original_name ||
+                                    'Untitled',
+
+                                parentShowName:
+                                    details.name ||
+                                    details.original_name ||
+                                    'Untitled',
+
+
+                                /*
+                                 * Season information
+                                 */
+
+                                season:
+                                    Number(
+                                        seasonItem.season_number
+                                    ),
+
+                                seasonNumber:
+                                    Number(
+                                        seasonItem.season_number
+                                    ),
+
+                                title:
+                                    seasonItem.name ||
+                                    `Season ${seasonItem.season_number}`,
+
+                                seasonTitle:
+                                    seasonItem.name ||
+                                    `Season ${seasonItem.season_number}`,
+
+
+                                overview:
+                                    seasonItem.overview ||
+                                    '',
+
+
+                                releaseDate:
+                                    airDate,
+
+                                year:
+                                    airDate
+                                        ? airDate.slice(
+                                            0,
+                                            4
+                                        )
+                                        : '',
+
+
+                                episodeCount:
+                                    Number(
+                                        seasonItem.episode_count ||
+                                        0
+                                    ),
+
+
+                                poster:
+                                    seasonItem.poster_path
+                                        ? `https://image.tmdb.org/t/p/w500${seasonItem.poster_path}`
+                                        : (
+                                            details.poster_path
+                                                ? `https://image.tmdb.org/t/p/w500${details.poster_path}`
+                                                : null
+                                        )
+
+                            };
+
+                        }
+                    )
+                : [];
+
+
+        /*
+         * --------------------------------------------------
+         * RETURN TV SHOW + SEASONS
+         * --------------------------------------------------
+         */
+
+        return res.status(200).json({
+
+            success:
+                true,
+
+            mode:
+                'detail',
+
+            type:
+                'tv',
+
+
+            movie:
+                normalizedShow,
+
+
+            show:
+                normalizedShow,
+
+
+            seasons:
+                seasons
+
+        });
+
+    }
+
+
+    /*
+     * ==================================================
+     * NORMAL MOVIE DETAIL
+     * ==================================================
+     */
+
+    const details =
+        await tmdbRequest(
+            `/movie/${encodeURIComponent(id)}`,
+            {
+                language
+            }
+        );
+
+
+    const normalized =
+        normalizeMovie(
+            details
+        );
+
+
+    return res.status(200).json({
+
+        success:
+            true,
+
+        mode:
+            'detail',
+
+        type:
+            'movie',
+
+        movie:
+            normalized
+
+    });
+
+}
 
 
         /*
