@@ -463,101 +463,6 @@ class NxshaProvider {
 }
 
 
-/**
- * AnimeWorld Hindi
- *
- * Uses AnimeWorld's own episode/movie IDs.
- * This provider is intentionally limited to type="anime".
- */
-class AnimeWorldProvider {
-    constructor() {
-        this.id = 'animeworld';
-        this.name = 'AnimeWorld Hindi';
-        this.priority = 1;
-        this.baseUrl = process.env.ANIMEWORLD_API_BASE;
-    }
-
-    async getStreams(id, type, season = null, episode = null, options = {}) {
-        if (type !== 'anime') {
-            return [];
-        }
-
-        if (!this.baseUrl) {
-            throw new Error(
-                'ANIMEWORLD_API_BASE environment variable is missing'
-            );
-        }
-
-        const baseUrl = this.baseUrl.replace(/\/$/, '');
-
-        /*
-         * For AnimeWorld content, `id` must be the actual
-         * AnimeWorld episode ID or movie ID.
-         *
-         * options.contentType:
-         *   "episode" -> episodeId
-         *   "movie"   -> movieId
-         */
-        const contentType = options.contentType || 'episode';
-
-        const url = new URL(`${baseUrl}/stream.php`);
-
-        if (contentType === 'movie') {
-            url.searchParams.set('movieId', String(id));
-        } else {
-            url.searchParams.set('episodeId', String(id));
-        }
-
-        const response = await fetch(url.toString());
-
-        if (!response.ok) {
-            throw new Error(
-                `AnimeWorld API returned HTTP ${response.status}`
-            );
-        }
-
-        const data = await response.json();
-
-        const streamUrl =
-            data?.stream?.streamLink ||
-            data?.stream?.url ||
-            data?.streamLink ||
-            data?.url ||
-            null;
-
-        if (!streamUrl) {
-            return [];
-        }
-
-        return [{
-            stream: {
-                id: `animeworld-${id}`,
-                serverName: 'AnimeWorld Hindi',
-                url: streamUrl,
-
-                /*
-                 * If AnimeWorld returns a direct .m3u8 URL,
-                 * your frontend may need to support "hls".
-                 *
-                 * Otherwise keep iframe if the URL is an embed page.
-                 */
-                type: streamUrl.includes('.m3u8')
-                    ? 'hls'
-                    : 'iframe',
-
-                languages: ['Hindi']
-            },
-
-            providerInfo: {
-                id: 'animeworld',
-                name: 'AnimeWorld Hindi',
-                priority: 1
-            }
-        }];
-    }
-}
-
-
 /* ============================================================
  * EXPORT PROVIDERS
  * ============================================================ */
@@ -573,10 +478,6 @@ module.exports = {
     superembed: SuperEmbedProvider,
     'superembed-vip': SuperEmbedVIPProvider,
     nontongo: NontonGoProvider,
-
-     // Anime
-    animeworld: AnimeWorldProvider,
-
 
     // New
     screenscape: ScreenScapeProvider,
