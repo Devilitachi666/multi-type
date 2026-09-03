@@ -574,6 +574,10 @@ module.exports = {
     'superembed-vip': SuperEmbedVIPProvider,
     nontongo: NontonGoProvider,
 
+     // Anime
+    animeworld: AnimeWorldProvider,
+
+
     // New
     screenscape: ScreenScapeProvider,
     vidzee: VidZeeProvider,
