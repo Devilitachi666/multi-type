@@ -1251,6 +1251,443 @@ if (
 
 }
 
+        /*
+ * ==================================================
+ * RECENTLY ADDED EPISODES
+ * ==================================================
+ *
+ * /api/movies?episodes=true&page=1
+ *
+ * Returns individual episodes from recently aired TV shows.
+ */
+
+if (
+    String(
+        req.query.episodes
+    ).toLowerCase() === 'true'
+) {
+
+    /*
+     * --------------------------------------------------
+     * GET CURRENT / RECENT TV SHOWS
+     * --------------------------------------------------
+     */
+
+    const tvData =
+        await tmdbRequest(
+            '/tv/on_the_air',
+            {
+                language,
+                page
+            }
+        );
+
+
+    const shows =
+        Array.isArray(
+            tvData.results
+        )
+            ? tvData.results
+            : [];
+
+
+    /*
+     * --------------------------------------------------
+     * LIMIT SHOWS
+     *
+     * Prevent too many TMDB requests.
+     * --------------------------------------------------
+     */
+
+    const showsToProcess =
+        shows.slice(
+            0,
+            12
+        );
+
+
+    /*
+     * --------------------------------------------------
+     * LOAD LATEST SEASON EPISODES
+     * --------------------------------------------------
+     */
+
+    const episodeGroups =
+        await Promise.all(
+
+            showsToProcess.map(
+                async show => {
+
+                    try {
+
+                        /*
+                         * Get full TV details
+                         */
+
+                        const details =
+                            await tmdbRequest(
+                                `/tv/${encodeURIComponent(
+                                    show.id
+                                )}`,
+                                {
+                                    language
+                                }
+                            );
+
+
+                        /*
+                         * TMDB provides the latest aired episode.
+                         */
+
+                        const lastEpisode =
+                            details.last_episode_to_air;
+
+
+                        if (
+                            !lastEpisode
+                        ) {
+
+                            return [];
+
+                        }
+
+
+                        const seasonNumber =
+                            Number(
+                                lastEpisode.season_number ||
+                                1
+                            );
+
+
+                        /*
+                         * Don't process specials.
+                         */
+
+                        if (
+                            seasonNumber <= 0
+                        ) {
+
+                            return [];
+
+                        }
+
+
+                        /*
+                         * Load the complete latest season
+                         */
+
+                        const seasonData =
+                            await tmdbRequest(
+                                `/tv/${encodeURIComponent(
+                                    show.id
+                                )}/season/${encodeURIComponent(
+                                    seasonNumber
+                                )}`,
+                                {
+                                    language
+                                }
+                            );
+
+
+                        const seasonEpisodes =
+                            Array.isArray(
+                                seasonData.episodes
+                            )
+                                ? seasonData.episodes
+                                : [];
+
+
+                        /*
+                         * Convert episodes into cards.
+                         */
+
+                        return seasonEpisodes
+                            .filter(
+                                episode =>
+                                    episode.air_date
+                            )
+                            .map(
+                                episode => {
+
+                                    return {
+
+                                        /*
+                                         * Unique episode ID
+                                         */
+
+                                        id:
+                                            `${show.id}-s${episode.season_number}-e${episode.episode_number}`,
+
+
+                                        /*
+                                         * MEDIA TYPE
+                                         */
+
+                                        type:
+                                            'tv',
+
+
+                                        /*
+                                         * PARENT SHOW
+                                         */
+
+                                        parentShowId:
+                                            String(
+                                                show.id
+                                            ),
+
+                                        parentShowName:
+                                            details.name ||
+                                            details.original_name ||
+                                            show.name ||
+                                            'Untitled',
+
+
+                                        /*
+                                         * SHOW TITLE
+                                         */
+
+                                        showTitle:
+                                            details.name ||
+                                            show.name ||
+                                            'Untitled',
+
+
+                                        /*
+                                         * SEASON / EPISODE
+                                         */
+
+                                        seasonNumber:
+                                            Number(
+                                                episode.season_number ||
+                                                seasonNumber
+                                            ),
+
+                                        episodeNumber:
+                                            Number(
+                                                episode.episode_number ||
+                                                0
+                                            ),
+
+
+                                        /*
+                                         * EPISODE TITLE
+                                         */
+
+                                        title:
+                                            episode.name ||
+                                            `Episode ${episode.episode_number}`,
+
+
+                                        /*
+                                         * DESCRIPTION
+                                         */
+
+                                        overview:
+                                            episode.overview ||
+                                            '',
+
+
+                                        /*
+                                         * AIR DATE
+                                         */
+
+                                        releaseDate:
+                                            episode.air_date ||
+                                            '',
+
+                                        airDate:
+                                            episode.air_date ||
+                                            '',
+
+                                        year:
+                                            episode.air_date
+                                                ? episode.air_date.slice(
+                                                    0,
+                                                    4
+                                                )
+                                                : '',
+
+
+                                        /*
+                                         * EPISODE IMAGE
+                                         */
+
+                                        poster:
+                                            episode.still_path
+                                                ? `https://image.tmdb.org/t/p/w500${episode.still_path}`
+                                                : (
+                                                    show.poster_path
+                                                        ? `https://image.tmdb.org/t/p/w500${show.poster_path}`
+                                                        : null
+                                                ),
+
+                                        still:
+                                            episode.still_path
+                                                ? `https://image.tmdb.org/t/p/w500${episode.still_path}`
+                                                : null,
+
+
+                                        /*
+                                         * BACKDROP
+                                         */
+
+                                        backdrop:
+                                            details.backdrop_path
+                                                ? `https://image.tmdb.org/t/p/w1280${details.backdrop_path}`
+                                                : null,
+
+
+                                        /*
+                                         * EPISODE RUNTIME
+                                         */
+
+                                        runtime:
+                                            Number(
+                                                episode.runtime ||
+                                                0
+                                            ),
+
+
+                                        /*
+                                         * SHOW RATING
+                                         */
+
+                                        rating:
+                                            Number(
+                                                details.vote_average ||
+                                                show.vote_average ||
+                                                0
+                                            )
+
+                                    };
+
+                                }
+                            );
+
+                    }
+
+                    catch (
+                        episodeError
+                    ) {
+
+                        console.error(
+                            '[Episodes] Failed to load show:',
+                            show.id,
+                            episodeError
+                        );
+
+
+                        return [];
+
+                    }
+
+                }
+            )
+
+        );
+
+
+    /*
+     * --------------------------------------------------
+     * FLATTEN ALL EPISODES
+     * --------------------------------------------------
+     */
+
+    const episodes =
+        episodeGroups.flat();
+
+
+    /*
+     * --------------------------------------------------
+     * SORT BY AIR DATE
+     *
+     * Newest episode first.
+     * --------------------------------------------------
+     */
+
+    episodes.sort(
+        (
+            a,
+            b
+        ) => {
+
+            const dateA =
+                new Date(
+                    a.airDate ||
+                    0
+                ).getTime();
+
+
+            const dateB =
+                new Date(
+                    b.airDate ||
+                    0
+                ).getTime();
+
+
+            return (
+                dateB -
+                dateA
+            );
+
+        }
+    );
+
+
+    /*
+     * --------------------------------------------------
+     * LIMIT RESPONSE
+     * --------------------------------------------------
+     */
+
+    const recentEpisodes =
+        episodes.slice(
+            0,
+            24
+        );
+
+
+    /*
+     * --------------------------------------------------
+     * RESPONSE
+     * --------------------------------------------------
+     */
+
+    return res.status(200).json({
+
+        success:
+            true,
+
+        mode:
+            'episodes',
+
+        type:
+            'tv',
+
+        page:
+            Number(
+                tvData.page ||
+                page ||
+                1
+            ),
+
+        totalPages:
+            Number(
+                tvData.total_pages ||
+                1
+            ),
+
+        totalResults:
+            recentEpisodes.length,
+
+        movies:
+            recentEpisodes
+
+    });
+
+}
+
 
         /*
          * ==================================================
