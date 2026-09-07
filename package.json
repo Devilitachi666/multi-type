@@ -1,0 +1,15 @@
+{
+  "name": "maroonflix-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Provider-based media iframe API for MaroonFlix",
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "cheerio": "^1.1.2"
+  }
+}
