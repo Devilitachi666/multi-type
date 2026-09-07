@@ -905,18 +905,47 @@ if (
  * TV / WEB SERIES
  * ==================================================
  *
+ * Examples:
+ *
  * /api/movies?type=tv
  *
- * Returns popular TV/web-series results.
+ * /api/movies?type=tv&category=top-rated
  */
 
 if (
     String(type).toLowerCase() === 'tv'
 ) {
 
+    let tvEndpoint =
+        '/tv/popular';
+
+
+    let tvCategory =
+        'popular';
+
+
+    /*
+     * TOP RATED TV SHOWS
+     */
+
+    if (
+        String(category)
+            .toLowerCase() ===
+        'top-rated'
+    ) {
+
+        tvEndpoint =
+            '/tv/top_rated';
+
+        tvCategory =
+            'top-rated';
+
+    }
+
+
     const tvData =
         await tmdbRequest(
-            '/tv/popular',
+            tvEndpoint,
             {
                 language,
                 page
@@ -924,35 +953,45 @@ if (
         );
 
 
-    return res.status(200).json({
+    return res
+        .status(200)
+        .json({
 
-        success: true,
+            success:
+                true,
 
-        mode: 'tv',
+            mode:
+                'tv',
 
-        type: 'tv',
+            type:
+                'tv',
 
-        page:
-            tvData.page || 1,
+            category:
+                tvCategory,
 
-        totalPages:
-            tvData.total_pages || 1,
+            page:
+                tvData.page || 1,
 
-        totalResults:
-            tvData.total_results || 0,
+            totalPages:
+                tvData.total_pages || 1,
 
-        movies:
-            Array.isArray(tvData.results)
-                ? tvData.results.map(
-                    normalizeTV
+            totalResults:
+                tvData.total_results || 0,
+
+            movies:
+                Array.isArray(
+                    tvData.results
                 )
-                : []
+                    ? tvData.results.map(
+                        normalizeTV
+                    )
+                    : []
 
-    });
+        });
 
 }
 
-        /*
+/*
  * ==================================================
  * LATEST ANIME
  * ==================================================
