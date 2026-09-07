@@ -228,6 +228,7 @@ module.exports = async (
             query = '',
             genre = '',
             category = '',
+            year = '',
             page = '1',
             language = 'en-US',
             region = 'IN'
