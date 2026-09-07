@@ -699,8 +699,208 @@ module.exports = async (
 
 }
 
-
         /*
+ * ==================================================
+ * YEAR FILTER
+ * ==================================================
+ *
+ * /api/movies?year=2000
+ *
+ * Returns movies AND TV shows from the selected year.
+ */
+
+if (
+    String(year).trim()
+) {
+
+    const selectedYear =
+        String(year).trim();
+
+
+    /*
+     * Validate year
+     */
+
+    if (
+        !/^\d{4}$/.test(
+            selectedYear
+        )
+    ) {
+
+        return res
+            .status(400)
+            .json({
+
+                success: false,
+
+                error:
+                    'Invalid year'
+
+            });
+
+    }
+
+
+    /*
+     * --------------------------------------------------
+     * MOVIES FROM YEAR
+     * --------------------------------------------------
+     */
+
+    const movieData =
+        await tmdbRequest(
+            '/discover/movie',
+            {
+                language,
+                region,
+                page,
+
+                primary_release_year:
+                    selectedYear,
+
+                sort_by:
+                    'popularity.desc',
+
+                include_adult:
+                    'false',
+
+                include_video:
+                    'false'
+            }
+        );
+
+
+    /*
+     * --------------------------------------------------
+     * TV SHOWS FROM YEAR
+     * --------------------------------------------------
+     */
+
+    const tvData =
+        await tmdbRequest(
+            '/discover/tv',
+            {
+                language,
+                page,
+
+                first_air_date_year:
+                    selectedYear,
+
+                sort_by:
+                    'popularity.desc',
+
+                include_adult:
+                    'false'
+            }
+        );
+
+
+    /*
+     * --------------------------------------------------
+     * NORMALIZE
+     * --------------------------------------------------
+     */
+
+    const movies =
+        Array.isArray(
+            movieData.results
+        )
+            ? movieData.results.map(
+                normalizeMovie
+            )
+            : [];
+
+
+    const tvShows =
+        Array.isArray(
+            tvData.results
+        )
+            ? tvData.results.map(
+                normalizeTV
+            )
+            : [];
+
+
+    /*
+     * --------------------------------------------------
+     * COMBINE MOVIES + TV SHOWS
+     * --------------------------------------------------
+     */
+
+    const combined = [
+        ...movies,
+        ...tvShows
+    ];
+
+
+    /*
+     * Sort by popularity
+     */
+
+    combined.sort(
+        (a, b) => {
+
+            const votesA =
+                Number(
+                    a.voteCount ||
+                    0
+                );
+
+            const votesB =
+                Number(
+                    b.voteCount ||
+                    0
+                );
+
+            return (
+                votesB -
+                votesA
+            );
+
+        }
+    );
+
+
+    /*
+     * --------------------------------------------------
+     * RETURN
+     * --------------------------------------------------
+     */
+
+    return res
+        .status(200)
+        .json({
+
+            success:
+                true,
+
+            mode:
+                'year',
+
+            year:
+                selectedYear,
+
+            page:
+                Number(page) || 1,
+
+            totalPages:
+                Math.max(
+                    movieData.total_pages || 1,
+                    tvData.total_pages || 1
+                ),
+
+            totalResults:
+                combined.length,
+
+            movies:
+                combined
+
+        });
+
+}
+
+
+/*
  * ==================================================
  * TV / WEB SERIES
  * ==================================================
