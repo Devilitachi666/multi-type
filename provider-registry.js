@@ -482,7 +482,7 @@ class HindiAnimeProvider {
     constructor(config = {}) {
         this.config = config;
         this.baseUrl = String(
-            config.baseUrl || process.env.HINDI_ANIME_BASE_URL || 'https://animesalt.ac'
+            config.baseUrl || process.env.HINDI_ANIME_BASE_URL || 'https://animesalt.me'
         ).replace(/\/$/, '');
         this.tmdbBase = 'https://api.themoviedb.org/3';
         this.timeout = Number(config.timeout || 12000);
