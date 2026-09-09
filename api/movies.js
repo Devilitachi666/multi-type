@@ -552,6 +552,430 @@ module.exports = async (
 } 
 
         /*
+ * ==================================================
+ * COLLECTIONS
+ * ==================================================
+ */
+
+if (
+    String(collection).trim()
+) {
+
+    const collectionKey =
+        String(collection)
+            .toLowerCase()
+            .trim();
+
+
+    /*
+     * Collection search configuration
+     */
+
+    const collectionMap = {
+
+        'marvel':
+            'Marvel',
+
+        'dc':
+            'DC Comics',
+
+        'star-wars':
+            'Star Wars',
+
+        'harry-potter':
+            'Harry Potter',
+
+        'doraemon':
+            'Doraemon',
+
+        'fast-furious':
+            'Fast & Furious',
+
+        'pirates-caribbean':
+            'Pirates of the Caribbean',
+
+        'resident-evil':
+            'Resident Evil',
+
+        'shinchan':
+            'Crayon Shin-chan',
+
+        'transformers':
+            'Transformers',
+
+        'twilight':
+            'Twilight',
+
+        'x-men':
+            'X-Men',
+
+        'mission-impossible':
+            'Mission: Impossible',
+
+        'final-destination':
+            'Final Destination',
+
+        'lord-of-rings':
+            'The Lord of the Rings',
+
+        'terminator':
+            'Terminator',
+
+        'predator':
+            'Predator',
+
+        'planet-of-the-apes':
+            'Planet of the Apes',
+
+        'spider-man':
+            'Spider-Man',
+
+        'batman':
+            'Batman',
+
+        'john-wick':
+            'John Wick',
+
+        'conjuring':
+            'The Conjuring',
+
+        'jurassic-park':
+            'Jurassic Park',
+
+        'matrix':
+            'The Matrix',
+
+        'avatar':
+            'Avatar',
+
+        'hunger-games':
+            'The Hunger Games',
+
+        'dhoom':
+            'Dhoom',
+
+        'baahubali':
+            'Baahubali',
+
+        'dragon-ball':
+            'Dragon Ball',
+
+        'one-piece':
+            'One Piece',
+
+        'demon-slayer':
+            'Demon Slayer',
+
+        'pokemon':
+            'Pokémon'
+
+    };
+
+
+    const collectionName =
+        collectionMap[
+            collectionKey
+        ];
+
+
+    if (
+        !collectionName
+    ) {
+
+        return res
+            .status(404)
+            .json({
+
+                success:
+                    false,
+
+                error:
+                    'Collection not found'
+
+            });
+
+    }
+
+
+    /*
+     * ==================================================
+     * SEARCH TMDB COLLECTIONS
+     * ==================================================
+     */
+
+    const collectionSearch =
+        await tmdbRequest(
+            '/search/collection',
+            {
+
+                query:
+                    collectionName,
+
+                language,
+
+                page
+
+            }
+        );
+
+
+    const collections =
+        Array.isArray(
+            collectionSearch.results
+        )
+            ? collectionSearch.results
+            : [];
+
+
+    /*
+     * Find closest collection name
+     */
+
+    const normalizedName =
+        collectionName
+            .toLowerCase()
+            .replace(
+                /[^a-z0-9]/g,
+                ''
+            );
+
+
+    let matchedCollection =
+        collections.find(
+            item => {
+
+                const name =
+                    String(
+                        item.name ||
+                        ''
+                    )
+                        .toLowerCase()
+                        .replace(
+                            /[^a-z0-9]/g,
+                            ''
+                        );
+
+
+                return (
+                    name ===
+                    normalizedName
+                );
+
+            }
+        );
+
+
+    /*
+     * Fallback to first result
+     */
+
+    if (
+        !matchedCollection &&
+        collections.length
+    ) {
+
+        matchedCollection =
+            collections[0];
+
+    }
+
+
+    /*
+     * If TMDB collection exists,
+     * load exact collection parts
+     */
+
+    if (
+        matchedCollection &&
+        matchedCollection.id
+    ) {
+
+        const collectionData =
+            await tmdbRequest(
+                `/collection/${encodeURIComponent(
+                    matchedCollection.id
+                )}`,
+                {
+                    language
+                }
+            );
+
+
+        const movies =
+            Array.isArray(
+                collectionData.parts
+            )
+                ? collectionData.parts
+                    .map(
+                        normalizeMovie
+                    )
+                    .sort(
+                        (
+                            a,
+                            b
+                        ) => {
+
+                            return (
+                                new Date(
+                                    a.releaseDate ||
+                                    '1900-01-01'
+                                ).getTime()
+                                -
+                                new Date(
+                                    b.releaseDate ||
+                                    '1900-01-01'
+                                ).getTime()
+                            );
+
+                        }
+                    )
+                : [];
+
+
+        return res
+            .status(200)
+            .json({
+
+                success:
+                    true,
+
+                mode:
+                    'collection',
+
+                collection:
+                    collectionKey,
+
+                collectionName:
+                    collectionData.name ||
+                    collectionName,
+
+                page:
+                    1,
+
+                totalPages:
+                    1,
+
+                totalResults:
+                    movies.length,
+
+                movies:
+                    movies
+
+            });
+
+    }
+
+
+    /*
+     * ==================================================
+     * FALLBACK SEARCH
+     *
+     * Some anime/TV franchises do not have
+     * one TMDB movie collection.
+     * ==================================================
+     */
+
+    const movieSearch =
+        await tmdbRequest(
+            '/search/movie',
+            {
+
+                query:
+                    collectionName,
+
+                language,
+
+                region,
+
+                page,
+
+                include_adult:
+                    'false'
+
+            }
+        );
+
+
+    const tvSearch =
+        await tmdbRequest(
+            '/search/tv',
+            {
+
+                query:
+                    collectionName,
+
+                language,
+
+                page,
+
+                include_adult:
+                    'false'
+
+            }
+        );
+
+
+    const movies =
+        Array.isArray(
+            movieSearch.results
+        )
+            ? movieSearch.results.map(
+                normalizeMovie
+            )
+            : [];
+
+
+    const tvShows =
+        Array.isArray(
+            tvSearch.results
+        )
+            ? tvSearch.results.map(
+                normalizeTV
+            )
+            : [];
+
+
+    const combined = [
+        ...movies,
+        ...tvShows
+    ];
+
+
+    return res
+        .status(200)
+        .json({
+
+            success:
+                true,
+
+            mode:
+                'collection-search',
+
+            collection:
+                collectionKey,
+
+            collectionName,
+
+            page:
+                Number(page) || 1,
+
+            totalPages:
+                Math.max(
+                    movieSearch.total_pages || 1,
+                    tvSearch.total_pages || 1
+                ),
+
+            totalResults:
+                combined.length,
+
+            movies:
+                combined
+
+        });
+
+}
+
+        /*
          * ==================================================
          * SEARCH
          * ==================================================
