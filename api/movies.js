@@ -223,16 +223,16 @@ module.exports = async (
     try {
 
         const {
-            id,
-            type = '',
-            query = '',
-            genre = '',
-            category = '',
-            year = '',
-            page = '1',
-            language = 'en-US',
-            region = 'IN'
-        } = req.query || {};
+    id,
+    type = '',
+    query = '',
+    genre = '',
+    category = '',
+    collection = '',
+    page = '1',
+    language = 'en-US',
+    region = 'IN'
+} = req.query || {};
 
 
         /*
