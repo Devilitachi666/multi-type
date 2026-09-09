@@ -229,6 +229,7 @@ module.exports = async (
     genre = '',
     category = '',
     collection = '',
+    year = '',
     page = '1',
     language = 'en-US',
     region = 'IN'
