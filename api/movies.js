@@ -552,10 +552,23 @@ module.exports = async (
 
 } 
 
-        /*
+/*
  * ==================================================
  * COLLECTIONS
  * ==================================================
+ *
+ * IMPORTANT:
+ *
+ * This system NEVER blindly uses:
+ *
+ * collections[0]
+ *
+ * A TMDB collection is only used when its name
+ * actually matches the requested franchise.
+ *
+ * Otherwise MaroonFlix falls back to searching
+ * movies and TV shows for that franchise.
+ *
  */
 
 if (
@@ -569,118 +582,413 @@ if (
 
 
     /*
-     * Collection search configuration
+     * ==================================================
+     * COLLECTION CONFIGURATION
+     * ==================================================
      */
 
     const collectionMap = {
 
-        'marvel':
-            'Marvel',
+        'marvel': {
+            name:
+                'Marvel',
 
-        'dc':
-            'DC Comics',
+            movieQuery:
+                'Marvel',
 
-        'star-wars':
-            'Star Wars',
+            tvQuery:
+                'Marvel'
+        },
 
-        'harry-potter':
-            'Harry Potter',
 
-        'doraemon':
-            'Doraemon',
+        'dc': {
+            name:
+                'DC',
 
-        'fast-furious':
-            'Fast & Furious',
+            movieQuery:
+                'DC',
 
-        'pirates-caribbean':
-            'Pirates of the Caribbean',
+            tvQuery:
+                'DC'
+        },
 
-        'resident-evil':
-            'Resident Evil',
 
-        'shinchan':
-            'Crayon Shin-chan',
+        'star-wars': {
+            name:
+                'Star Wars',
 
-        'transformers':
-            'Transformers',
+            movieQuery:
+                'Star Wars',
 
-        'twilight':
-            'Twilight',
+            tvQuery:
+                'Star Wars'
+        },
 
-        'x-men':
-            'X-Men',
 
-        'mission-impossible':
-            'Mission: Impossible',
+        'harry-potter': {
+            name:
+                'Harry Potter',
 
-        'final-destination':
-            'Final Destination',
+            movieQuery:
+                'Harry Potter',
 
-        'lord-of-rings':
-            'The Lord of the Rings',
+            tvQuery:
+                'Harry Potter'
+        },
 
-        'terminator':
-            'Terminator',
 
-        'predator':
-            'Predator',
+        'doraemon': {
+            name:
+                'Doraemon',
 
-        'planet-of-the-apes':
-            'Planet of the Apes',
+            movieQuery:
+                'Doraemon',
 
-        'spider-man':
-            'Spider-Man',
+            tvQuery:
+                'Doraemon'
+        },
 
-        'batman':
-            'Batman',
 
-        'john-wick':
-            'John Wick',
+        'fast-furious': {
+            name:
+                'Fast & Furious',
 
-        'conjuring':
-            'The Conjuring',
+            movieQuery:
+                'Fast and Furious',
 
-        'jurassic-park':
-            'Jurassic Park',
+            tvQuery:
+                'Fast and Furious'
+        },
 
-        'matrix':
-            'The Matrix',
 
-        'avatar':
-            'Avatar',
+        'pirates-caribbean': {
+            name:
+                'Pirates of the Caribbean',
 
-        'hunger-games':
-            'The Hunger Games',
+            movieQuery:
+                'Pirates of the Caribbean',
 
-        'dhoom':
-            'Dhoom',
+            tvQuery:
+                'Pirates of the Caribbean'
+        },
 
-        'baahubali':
-            'Baahubali',
 
-        'dragon-ball':
-            'Dragon Ball',
+        'resident-evil': {
+            name:
+                'Resident Evil',
 
-        'one-piece':
-            'One Piece',
+            movieQuery:
+                'Resident Evil',
 
-        'demon-slayer':
-            'Demon Slayer',
+            tvQuery:
+                'Resident Evil'
+        },
 
-        'pokemon':
-            'Pokémon'
+
+        'shinchan': {
+            name:
+                'Shinchan',
+
+            movieQuery:
+                'Crayon Shin-chan',
+
+            tvQuery:
+                'Crayon Shin-chan'
+        },
+
+
+        'transformers': {
+            name:
+                'Transformers',
+
+            movieQuery:
+                'Transformers',
+
+            tvQuery:
+                'Transformers'
+        },
+
+
+        'twilight': {
+            name:
+                'Twilight',
+
+            movieQuery:
+                'Twilight',
+
+            tvQuery:
+                'Twilight'
+        },
+
+
+        'x-men': {
+            name:
+                'X-Men',
+
+            movieQuery:
+                'X-Men',
+
+            tvQuery:
+                'X-Men'
+        },
+
+
+        'mission-impossible': {
+            name:
+                'Mission: Impossible',
+
+            movieQuery:
+                'Mission Impossible',
+
+            tvQuery:
+                'Mission Impossible'
+        },
+
+
+        'final-destination': {
+            name:
+                'Final Destination',
+
+            movieQuery:
+                'Final Destination',
+
+            tvQuery:
+                'Final Destination'
+        },
+
+
+        'lord-of-rings': {
+            name:
+                'The Lord of the Rings',
+
+            movieQuery:
+                'The Lord of the Rings',
+
+            tvQuery:
+                'The Lord of the Rings'
+        },
+
+
+        'terminator': {
+            name:
+                'The Terminator',
+
+            movieQuery:
+                'Terminator',
+
+            tvQuery:
+                'Terminator'
+        },
+
+
+        'predator': {
+            name:
+                'Predator',
+
+            movieQuery:
+                'Predator',
+
+            tvQuery:
+                'Predator'
+        },
+
+
+        'planet-of-the-apes': {
+            name:
+                'Planet of the Apes',
+
+            movieQuery:
+                'Planet of the Apes',
+
+            tvQuery:
+                'Planet of the Apes'
+        },
+
+
+        'spider-man': {
+            name:
+                'Spider-Man',
+
+            movieQuery:
+                'Spider-Man',
+
+            tvQuery:
+                'Spider-Man'
+        },
+
+
+        'batman': {
+            name:
+                'Batman',
+
+            movieQuery:
+                'Batman',
+
+            tvQuery:
+                'Batman'
+        },
+
+
+        'john-wick': {
+            name:
+                'John Wick',
+
+            movieQuery:
+                'John Wick',
+
+            tvQuery:
+                'John Wick'
+        },
+
+
+        'conjuring': {
+            name:
+                'The Conjuring Universe',
+
+            movieQuery:
+                'The Conjuring',
+
+            tvQuery:
+                'The Conjuring'
+        },
+
+
+        'jurassic-park': {
+            name:
+                'Jurassic Park',
+
+            movieQuery:
+                'Jurassic Park',
+
+            tvQuery:
+                'Jurassic Park'
+        },
+
+
+        'matrix': {
+            name:
+                'The Matrix',
+
+            movieQuery:
+                'The Matrix',
+
+            tvQuery:
+                'The Matrix'
+        },
+
+
+        'avatar': {
+            name:
+                'Avatar',
+
+            movieQuery:
+                'Avatar',
+
+            tvQuery:
+                'Avatar'
+        },
+
+
+        'hunger-games': {
+            name:
+                'The Hunger Games',
+
+            movieQuery:
+                'The Hunger Games',
+
+            tvQuery:
+                'The Hunger Games'
+        },
+
+
+        'dhoom': {
+            name:
+                'Dhoom',
+
+            movieQuery:
+                'Dhoom',
+
+            tvQuery:
+                'Dhoom'
+        },
+
+
+        'baahubali': {
+            name:
+                'Baahubali',
+
+            movieQuery:
+                'Baahubali',
+
+            tvQuery:
+                'Baahubali'
+        },
+
+
+        'dragon-ball': {
+            name:
+                'Dragon Ball',
+
+            movieQuery:
+                'Dragon Ball',
+
+            tvQuery:
+                'Dragon Ball'
+        },
+
+
+        'one-piece': {
+            name:
+                'One Piece',
+
+            movieQuery:
+                'One Piece',
+
+            tvQuery:
+                'One Piece'
+        },
+
+
+        'demon-slayer': {
+            name:
+                'Demon Slayer',
+
+            movieQuery:
+                'Demon Slayer',
+
+            tvQuery:
+                'Demon Slayer'
+        },
+
+
+        'pokemon': {
+            name:
+                'Pokémon',
+
+            movieQuery:
+                'Pokémon',
+
+            tvQuery:
+                'Pokémon'
+        }
 
     };
 
 
-    const collectionName =
+    /*
+     * ==================================================
+     * GET COLLECTION CONFIG
+     * ==================================================
+     */
+
+    const config =
         collectionMap[
             collectionKey
         ];
 
 
     if (
-        !collectionName
+        !config
     ) {
 
         return res
@@ -700,6 +1008,34 @@ if (
 
     /*
      * ==================================================
+     * NORMALIZE COLLECTION NAME
+     * ==================================================
+     *
+     * Used only for exact/safe comparison.
+     *
+     */
+
+    const normalizeCollectionName =
+        value =>
+
+            String(
+                value || ''
+            )
+                .toLowerCase()
+                .replace(
+                    /[^a-z0-9]/g,
+                    ''
+                );
+
+
+    const requestedName =
+        normalizeCollectionName(
+            config.name
+        );
+
+
+    /*
+     * ==================================================
      * SEARCH TMDB COLLECTIONS
      * ==================================================
      */
@@ -710,7 +1046,7 @@ if (
             {
 
                 query:
-                    collectionName,
+                    config.name,
 
                 language,
 
@@ -729,37 +1065,27 @@ if (
 
 
     /*
-     * Find closest collection name
+     * ==================================================
+     * SAFE COLLECTION MATCH
+     * ==================================================
+     *
+     * We DO NOT use collections[0].
+     *
      */
-
-    const normalizedName =
-        collectionName
-            .toLowerCase()
-            .replace(
-                /[^a-z0-9]/g,
-                ''
-            );
-
 
     let matchedCollection =
         collections.find(
             item => {
 
-                const name =
-                    String(
-                        item.name ||
-                        ''
-                    )
-                        .toLowerCase()
-                        .replace(
-                            /[^a-z0-9]/g,
-                            ''
-                        );
+                const itemName =
+                    normalizeCollectionName(
+                        item.name
+                    );
 
 
                 return (
-                    name ===
-                    normalizedName
+                    itemName ===
+                    requestedName
                 );
 
             }
@@ -767,23 +1093,9 @@ if (
 
 
     /*
-     * Fallback to first result
-     */
-
-    if (
-        !matchedCollection &&
-        collections.length
-    ) {
-
-        matchedCollection =
-            collections[0];
-
-    }
-
-
-    /*
-     * If TMDB collection exists,
-     * load exact collection parts
+     * ==================================================
+     * COLLECTION FOUND
+     * ==================================================
      */
 
     if (
@@ -816,16 +1128,23 @@ if (
                             b
                         ) => {
 
-                            return (
+                            const dateA =
                                 new Date(
                                     a.releaseDate ||
                                     '1900-01-01'
-                                ).getTime()
-                                -
+                                ).getTime();
+
+
+                            const dateB =
                                 new Date(
                                     b.releaseDate ||
                                     '1900-01-01'
-                                ).getTime()
+                                ).getTime();
+
+
+                            return (
+                                dateA -
+                                dateB
                             );
 
                         }
@@ -833,48 +1152,64 @@ if (
                 : [];
 
 
-        return res
-            .status(200)
-            .json({
+        /*
+         * Only use the collection
+         * if it actually contains movies.
+         */
 
-                success:
-                    true,
+        if (
+            movies.length
+        ) {
 
-                mode:
-                    'collection',
+            return res
+                .status(200)
+                .json({
 
-                collection:
-                    collectionKey,
+                    success:
+                        true,
 
-                collectionName:
-                    collectionData.name ||
-                    collectionName,
+                    mode:
+                        'collection',
 
-                page:
-                    1,
+                    collection:
+                        collectionKey,
 
-                totalPages:
-                    1,
+                    collectionName:
+                        collectionData.name ||
+                        config.name,
 
-                totalResults:
-                    movies.length,
+                    page:
+                        1,
 
-                movies:
-                    movies
+                    totalPages:
+                        1,
 
-            });
+                    totalResults:
+                        movies.length,
+
+                    movies:
+                        movies
+
+                });
+
+        }
 
     }
 
 
     /*
      * ==================================================
-     * FALLBACK SEARCH
-     *
-     * Some anime/TV franchises do not have
-     * one TMDB movie collection.
+     * CONTROLLED FRANCHISE SEARCH
      * ==================================================
+     *
+     * Used when:
+     *
+     * - No exact TMDB collection exists
+     * - Search results were ambiguous
+     * - The franchise is primarily TV/anime
+     *
      */
+
 
     const movieSearch =
         await tmdbRequest(
@@ -882,7 +1217,7 @@ if (
             {
 
                 query:
-                    collectionName,
+                    config.movieQuery,
 
                 language,
 
@@ -903,7 +1238,7 @@ if (
             {
 
                 query:
-                    collectionName,
+                    config.tvQuery,
 
                 language,
 
@@ -916,7 +1251,13 @@ if (
         );
 
 
-    const movies =
+    /*
+     * ==================================================
+     * NORMALIZE RESULTS
+     * ==================================================
+     */
+
+    const movieResults =
         Array.isArray(
             movieSearch.results
         )
@@ -926,7 +1267,7 @@ if (
             : [];
 
 
-    const tvShows =
+    const tvResults =
         Array.isArray(
             tvSearch.results
         )
@@ -936,11 +1277,113 @@ if (
             : [];
 
 
-    const combined = [
-        ...movies,
-        ...tvShows
-    ];
+    /*
+     * ==================================================
+     * REMOVE DUPLICATES
+     * ==================================================
+     */
 
+    const uniqueResults =
+        new Map();
+
+
+    [
+        ...movieResults,
+        ...tvResults
+    ].forEach(
+        item => {
+
+            const uniqueKey =
+                `${item.type}:${item.id}`;
+
+
+            if (
+                !uniqueResults.has(
+                    uniqueKey
+                )
+            ) {
+
+                uniqueResults.set(
+                    uniqueKey,
+                    item
+                );
+
+            }
+
+        }
+    );
+
+
+    const combined =
+        Array.from(
+            uniqueResults.values()
+        );
+
+
+    /*
+     * ==================================================
+     * SORT
+     * ==================================================
+     *
+     * Higher rated results first.
+     * If ratings are equal,
+     * newer content first.
+     *
+     */
+
+    combined.sort(
+        (
+            a,
+            b
+        ) => {
+
+            const ratingDifference =
+                Number(
+                    b.rating || 0
+                )
+                -
+                Number(
+                    a.rating || 0
+                );
+
+
+            if (
+                ratingDifference !== 0
+            ) {
+
+                return ratingDifference;
+
+            }
+
+
+            const dateA =
+                new Date(
+                    a.releaseDate ||
+                    '1900-01-01'
+                ).getTime();
+
+
+            const dateB =
+                new Date(
+                    b.releaseDate ||
+                    '1900-01-01'
+                ).getTime();
+
+
+            return (
+                dateB -
+                dateA
+            );
+
+        }
+    );
+
+
+    /*
+     * ==================================================
+     * RETURN SEARCH RESULTS
+     * ==================================================
+     */
 
     return res
         .status(200)
@@ -955,15 +1398,20 @@ if (
             collection:
                 collectionKey,
 
-            collectionName,
+            collectionName:
+                config.name,
 
             page:
                 Number(page) || 1,
 
             totalPages:
                 Math.max(
-                    movieSearch.total_pages || 1,
-                    tvSearch.total_pages || 1
+                    Number(
+                        movieSearch.total_pages || 1
+                    ),
+                    Number(
+                        tvSearch.total_pages || 1
+                    )
                 ),
 
             totalResults:
