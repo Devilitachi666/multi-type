@@ -597,391 +597,632 @@ if (
 
     const FRANCHISES = {
 
-        'marvel': {
-            name:
-                'Marvel',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'dc': {
-            name:
-                'DC',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'star-wars': {
-            name:
-                'Star Wars',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'harry-potter': {
-            name:
-                'Harry Potter',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'doraemon': {
-            name:
-                'Doraemon',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'fast-furious': {
-            name:
-                'Fast & Furious',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'pirates-caribbean': {
-            name:
-                'Pirates of the Caribbean',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'resident-evil': {
-            name:
-                'Resident Evil',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'shinchan': {
-            name:
-                'Shinchan',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'transformers': {
-            name:
-                'Transformers',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'twilight': {
-            name:
-                'Twilight',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'x-men': {
-            name:
-                'X-Men',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'mission-impossible': {
-            name:
-                'Mission: Impossible',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'final-destination': {
-            name:
-                'Final Destination',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'lord-of-rings': {
-            name:
-                'The Lord of the Rings',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'terminator': {
-            name:
-                'The Terminator',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'predator': {
-            name:
-                'Predator',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'planet-of-the-apes': {
-            name:
-                'Planet of the Apes',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'spider-man': {
-            name:
-                'Spider-Man',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'batman': {
-            name:
-                'Batman',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'john-wick': {
-            name:
-                'John Wick',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'conjuring': {
-            name:
-                'The Conjuring Universe',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'jurassic-park': {
-            name:
-                'Jurassic Park',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'matrix': {
-            name:
-                'The Matrix',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'avatar': {
-            name:
-                'Avatar',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'hunger-games': {
-            name:
-                'The Hunger Games',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'dhoom': {
-            name:
-                'Dhoom',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'baahubali': {
-            name:
-                'Baahubali',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'dragon-ball': {
-            name:
-                'Dragon Ball',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'one-piece': {
-            name:
-                'One Piece',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'demon-slayer': {
-            name:
-                'Demon Slayer',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        },
-
-
-        'pokemon': {
-            name:
-                'Pokémon',
-
-            collections: [],
-
-            movies: [],
-
-            tv: []
-        }
-
-    };
-
+    /*
+     * ==================================================
+     * MARVEL
+     * ==================================================
+     */
+
+    'marvel': {
+        name: 'Marvel',
+        mode: 'franchise',
+
+        /*
+         * Multiple exact franchise groups.
+         * Stage 2 will merge these.
+         */
+        collectionSearches: [
+            'Marvel Cinematic Universe'
+        ],
+
+        /*
+         * Important:
+         * Marvel is not represented by one normal TMDB
+         * collection containing every MCU movie.
+         *
+         * We will use exact movie registry data in Stage 2.
+         */
+        movieSearches: [
+            'Iron Man',
+            'Captain America',
+            'Thor',
+            'The Avengers',
+            'Guardians of the Galaxy',
+            'Ant-Man',
+            'Doctor Strange',
+            'Spider-Man'
+        ],
+
+        tvSearches: [
+            'WandaVision',
+            'Loki',
+            'The Falcon and the Winter Soldier',
+            'Hawkeye',
+            'Moon Knight',
+            'Ms. Marvel',
+            'She-Hulk',
+            'Secret Invasion'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * DC
+     * ==================================================
+     */
+
+    'dc': {
+        name: 'DC',
+        mode: 'franchise',
+
+        collectionSearches: [
+            'DC Extended Universe'
+        ],
+
+        movieSearches: [
+            'Batman',
+            'Superman',
+            'Wonder Woman',
+            'Justice League',
+            'Aquaman',
+            'Shazam'
+        ],
+
+        tvSearches: [
+            'Peacemaker',
+            'The Penguin'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * STAR WARS
+     * ==================================================
+     */
+
+    'star-wars': {
+        name: 'Star Wars',
+        mode: 'collection',
+        collectionSearches: [
+            'Star Wars Collection'
+        ],
+        tvSearches: [
+            'The Mandalorian',
+            'Andor',
+            'Obi-Wan Kenobi',
+            'Ahsoka',
+            'The Book of Boba Fett'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * HARRY POTTER
+     * ==================================================
+     */
+
+    'harry-potter': {
+        name: 'Harry Potter',
+        mode: 'collection',
+        collectionSearches: [
+            'Harry Potter Collection'
+        ],
+        movieSearches: [
+            'Fantastic Beasts'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * DORAEMON
+     * ==================================================
+     */
+
+    'doraemon': {
+        name: 'Doraemon',
+        mode: 'franchise',
+        collectionSearches: [
+            'Doraemon Collection'
+        ],
+        tvSearches: [
+            'Doraemon'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * FAST & FURIOUS
+     * ==================================================
+     */
+
+    'fast-furious': {
+        name: 'Fast & Furious',
+        mode: 'collection',
+        collectionSearches: [
+            'Fast & Furious Collection'
+        ],
+        movieSearches: [
+            'Hobbs & Shaw'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * PIRATES OF THE CARIBBEAN
+     * ==================================================
+     */
+
+    'pirates-caribbean': {
+        name: 'Pirates of the Caribbean',
+        mode: 'collection',
+        collectionSearches: [
+            'Pirates of the Caribbean Collection'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * RESIDENT EVIL
+     * ==================================================
+     */
+
+    'resident-evil': {
+        name: 'Resident Evil',
+        mode: 'franchise',
+        collectionSearches: [
+            'Resident Evil Collection',
+            'Resident Evil: Welcome to Raccoon City Collection'
+        ],
+        movieSearches: [
+            'Resident Evil: The Final Chapter',
+            'Resident Evil: Death Island'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * SHINCHAN
+     * ==================================================
+     */
+
+    'shinchan': {
+        name: 'Shinchan',
+        mode: 'franchise',
+        collectionSearches: [
+            'Crayon Shin-chan Collection'
+        ],
+        tvSearches: [
+            'Crayon Shin-chan'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * TRANSFORMERS
+     * ==================================================
+     */
+
+    'transformers': {
+        name: 'Transformers',
+        mode: 'franchise',
+        collectionSearches: [
+            'Transformers Collection'
+        ],
+        movieSearches: [
+            'Bumblebee',
+            'Transformers One'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * TWILIGHT
+     * ==================================================
+     */
+
+    'twilight': {
+        name: 'Twilight',
+        mode: 'collection',
+        collectionSearches: [
+            'The Twilight Collection'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * X-MEN
+     * ==================================================
+     */
+
+    'x-men': {
+        name: 'X-Men',
+        mode: 'franchise',
+        collectionSearches: [
+            'X-Men Collection'
+        ],
+        movieSearches: [
+            'Deadpool',
+            'Deadpool 2',
+            'Deadpool & Wolverine',
+            'The New Mutants'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * MISSION IMPOSSIBLE
+     * ==================================================
+     */
+
+    'mission-impossible': {
+        name: 'Mission: Impossible',
+        mode: 'collection',
+        collectionSearches: [
+            'Mission: Impossible Collection'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * FINAL DESTINATION
+     * ==================================================
+     */
+
+    'final-destination': {
+        name: 'Final Destination',
+        mode: 'collection',
+        collectionSearches: [
+            'Final Destination Collection'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * LORD OF THE RINGS
+     * ==================================================
+     */
+
+    'lord-of-rings': {
+        name: 'The Lord of the Rings',
+        mode: 'franchise',
+
+        collectionSearches: [
+            'The Lord of the Rings Collection',
+            'The Hobbit Collection'
+        ],
+
+        tvSearches: [
+            'The Lord of the Rings: The Rings of Power'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * TERMINATOR
+     * ==================================================
+     */
+
+    'terminator': {
+        name: 'The Terminator',
+        mode: 'collection',
+        collectionSearches: [
+            'Terminator Collection'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * PREDATOR
+     * ==================================================
+     */
+
+    'predator': {
+        name: 'Predator',
+        mode: 'franchise',
+        collectionSearches: [
+            'Predator Collection'
+        ],
+        movieSearches: [
+            'Prey'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * PLANET OF THE APES
+     * ==================================================
+     */
+
+    'planet-of-the-apes': {
+        name: 'Planet of the Apes',
+        mode: 'franchise',
+        collectionSearches: [
+            'Planet of the Apes Collection'
+        ],
+        movieSearches: [
+            'Rise of the Planet of the Apes',
+            'Dawn of the Planet of the Apes',
+            'War for the Planet of the Apes',
+            'Kingdom of the Planet of the Apes'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * SPIDER-MAN
+     * ==================================================
+     */
+
+    'spider-man': {
+        name: 'Spider-Man',
+        mode: 'franchise',
+
+        collectionSearches: [
+            'Spider-Man Collection',
+            'The Amazing Spider-Man Collection',
+            'Spider-Man: Spider-Verse Collection'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * BATMAN
+     * ==================================================
+     */
+
+    'batman': {
+        name: 'Batman',
+        mode: 'franchise',
+
+        collectionSearches: [
+            'Batman Collection',
+            'The Dark Knight Collection'
+        ],
+
+        movieSearches: [
+            'The Batman'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * JOHN WICK
+     * ==================================================
+     */
+
+    'john-wick': {
+        name: 'John Wick',
+        mode: 'franchise',
+        collectionSearches: [
+            'John Wick Collection'
+        ],
+        movieSearches: [
+            'Ballerina'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * THE CONJURING
+     * ==================================================
+     */
+
+    'conjuring': {
+        name: 'The Conjuring Universe',
+        mode: 'franchise',
+
+        collectionSearches: [
+            'The Conjuring Collection',
+            'Annabelle Collection',
+            'The Nun Collection'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * JURASSIC
+     * ==================================================
+     */
+
+    'jurassic-park': {
+        name: 'Jurassic Park',
+        mode: 'franchise',
+
+        collectionSearches: [
+            'Jurassic Park Collection'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * MATRIX
+     * ==================================================
+     */
+
+    'matrix': {
+        name: 'The Matrix',
+        mode: 'collection',
+
+        collectionSearches: [
+            'The Matrix Collection'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * AVATAR
+     * ==================================================
+     */
+
+    'avatar': {
+        name: 'Avatar',
+        mode: 'collection',
+
+        collectionSearches: [
+            'Avatar Collection'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * HUNGER GAMES
+     * ==================================================
+     */
+
+    'hunger-games': {
+        name: 'The Hunger Games',
+        mode: 'collection',
+
+        collectionSearches: [
+            'The Hunger Games Collection'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * DHOOM
+     * ==================================================
+     */
+
+    'dhoom': {
+        name: 'Dhoom',
+        mode: 'franchise',
+
+        movieSearches: [
+            'Dhoom',
+            'Dhoom 2',
+            'Dhoom 3'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * BAAHUBALI
+     * ==================================================
+     */
+
+    'baahubali': {
+        name: 'Baahubali',
+        mode: 'franchise',
+
+        movieSearches: [
+            'Baahubali: The Beginning',
+            'Baahubali 2: The Conclusion'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * DRAGON BALL
+     * ==================================================
+     */
+
+    'dragon-ball': {
+        name: 'Dragon Ball',
+        mode: 'franchise',
+
+        collectionSearches: [
+            'Dragon Ball Collection'
+        ],
+
+        tvSearches: [
+            'Dragon Ball',
+            'Dragon Ball Z',
+            'Dragon Ball GT',
+            'Dragon Ball Super',
+            'Dragon Ball DAIMA'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * ONE PIECE
+     * ==================================================
+     */
+
+    'one-piece': {
+        name: 'One Piece',
+        mode: 'franchise',
+
+        collectionSearches: [
+            'One Piece Collection'
+        ],
+
+        tvSearches: [
+            'One Piece'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * DEMON SLAYER
+     * ==================================================
+     */
+
+    'demon-slayer': {
+        name: 'Demon Slayer',
+        mode: 'franchise',
+
+        movieSearches: [
+            'Demon Slayer: Kimetsu no Yaiba'
+        ],
+
+        tvSearches: [
+            'Demon Slayer: Kimetsu no Yaiba'
+        ]
+    },
+
+
+    /*
+     * ==================================================
+     * POKÉMON
+     * ==================================================
+     */
+
+    'pokemon': {
+        name: 'Pokémon',
+        mode: 'franchise',
+
+        collectionSearches: [
+            'Pokémon Collection'
+        ],
+
+        tvSearches: [
+            'Pokémon'
+        ]
+    }
+
+};
 
     /*
      * ==================================================
