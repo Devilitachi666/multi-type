@@ -595,54 +595,27 @@ if (
      */
 
 
-    const FRANCHISES = {
+   const FRANCHISES = {
 
     /*
      * ==================================================
      * MARVEL
      * ==================================================
+     *
+     * MCU is not one single TMDB collection.
+     *
+     * Add exact movie IDs individually later.
      */
 
     'marvel': {
         name: 'Marvel',
         mode: 'franchise',
 
-        /*
-         * Multiple exact franchise groups.
-         * Stage 2 will merge these.
-         */
-        collectionSearches: [
-            'Marvel Cinematic Universe'
-        ],
+        collections: [],
 
-        /*
-         * Important:
-         * Marvel is not represented by one normal TMDB
-         * collection containing every MCU movie.
-         *
-         * We will use exact movie registry data in Stage 2.
-         */
-        movieSearches: [
-            'Iron Man',
-            'Captain America',
-            'Thor',
-            'The Avengers',
-            'Guardians of the Galaxy',
-            'Ant-Man',
-            'Doctor Strange',
-            'Spider-Man'
-        ],
+        movies: [],
 
-        tvSearches: [
-            'WandaVision',
-            'Loki',
-            'The Falcon and the Winter Soldier',
-            'Hawkeye',
-            'Moon Knight',
-            'Ms. Marvel',
-            'She-Hulk',
-            'Secret Invasion'
-        ]
+        tv: []
     },
 
 
@@ -656,23 +629,11 @@ if (
         name: 'DC',
         mode: 'franchise',
 
-        collectionSearches: [
-            'DC Extended Universe'
-        ],
+        collections: [],
 
-        movieSearches: [
-            'Batman',
-            'Superman',
-            'Wonder Woman',
-            'Justice League',
-            'Aquaman',
-            'Shazam'
-        ],
+        movies: [],
 
-        tvSearches: [
-            'Peacemaker',
-            'The Penguin'
-        ]
+        tv: []
     },
 
 
@@ -684,17 +645,15 @@ if (
 
     'star-wars': {
         name: 'Star Wars',
-        mode: 'collection',
-        collectionSearches: [
-            'Star Wars Collection'
+        mode: 'franchise',
+
+        collections: [
+            10
         ],
-        tvSearches: [
-            'The Mandalorian',
-            'Andor',
-            'Obi-Wan Kenobi',
-            'Ahsoka',
-            'The Book of Boba Fett'
-        ]
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -706,13 +665,15 @@ if (
 
     'harry-potter': {
         name: 'Harry Potter',
-        mode: 'collection',
-        collectionSearches: [
-            'Harry Potter Collection'
+        mode: 'franchise',
+
+        collections: [
+            1241
         ],
-        movieSearches: [
-            'Fantastic Beasts'
-        ]
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -725,12 +686,12 @@ if (
     'doraemon': {
         name: 'Doraemon',
         mode: 'franchise',
-        collectionSearches: [
-            'Doraemon Collection'
-        ],
-        tvSearches: [
-            'Doraemon'
-        ]
+
+        collections: [],
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -742,13 +703,15 @@ if (
 
     'fast-furious': {
         name: 'Fast & Furious',
-        mode: 'collection',
-        collectionSearches: [
-            'Fast & Furious Collection'
+        mode: 'franchise',
+
+        collections: [
+            9485
         ],
-        movieSearches: [
-            'Hobbs & Shaw'
-        ]
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -761,9 +724,14 @@ if (
     'pirates-caribbean': {
         name: 'Pirates of the Caribbean',
         mode: 'collection',
-        collectionSearches: [
-            'Pirates of the Caribbean Collection'
-        ]
+
+        collections: [
+            295
+        ],
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -776,14 +744,14 @@ if (
     'resident-evil': {
         name: 'Resident Evil',
         mode: 'franchise',
-        collectionSearches: [
-            'Resident Evil Collection',
-            'Resident Evil: Welcome to Raccoon City Collection'
+
+        collections: [
+            17255
         ],
-        movieSearches: [
-            'Resident Evil: The Final Chapter',
-            'Resident Evil: Death Island'
-        ]
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -796,12 +764,12 @@ if (
     'shinchan': {
         name: 'Shinchan',
         mode: 'franchise',
-        collectionSearches: [
-            'Crayon Shin-chan Collection'
-        ],
-        tvSearches: [
-            'Crayon Shin-chan'
-        ]
+
+        collections: [],
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -814,13 +782,14 @@ if (
     'transformers': {
         name: 'Transformers',
         mode: 'franchise',
-        collectionSearches: [
-            'Transformers Collection'
+
+        collections: [
+            8650
         ],
-        movieSearches: [
-            'Bumblebee',
-            'Transformers One'
-        ]
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -833,9 +802,14 @@ if (
     'twilight': {
         name: 'Twilight',
         mode: 'collection',
-        collectionSearches: [
-            'The Twilight Collection'
-        ]
+
+        collections: [
+            33514
+        ],
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -848,15 +822,18 @@ if (
     'x-men': {
         name: 'X-Men',
         mode: 'franchise',
-        collectionSearches: [
-            'X-Men Collection'
+
+        collections: [
+            748
         ],
-        movieSearches: [
-            'Deadpool',
-            'Deadpool 2',
-            'Deadpool & Wolverine',
-            'The New Mutants'
-        ]
+
+        movies: [
+            293660,
+            383498,
+            533535
+        ],
+
+        tv: []
     },
 
 
@@ -869,9 +846,14 @@ if (
     'mission-impossible': {
         name: 'Mission: Impossible',
         mode: 'collection',
-        collectionSearches: [
-            'Mission: Impossible Collection'
-        ]
+
+        collections: [
+            87359
+        ],
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -884,9 +866,14 @@ if (
     'final-destination': {
         name: 'Final Destination',
         mode: 'collection',
-        collectionSearches: [
-            'Final Destination Collection'
-        ]
+
+        collections: [
+            8864
+        ],
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -900,14 +887,14 @@ if (
         name: 'The Lord of the Rings',
         mode: 'franchise',
 
-        collectionSearches: [
-            'The Lord of the Rings Collection',
-            'The Hobbit Collection'
+        collections: [
+            119,
+            121938
         ],
 
-        tvSearches: [
-            'The Lord of the Rings: The Rings of Power'
-        ]
+        movies: [],
+
+        tv: []
     },
 
 
@@ -920,9 +907,14 @@ if (
     'terminator': {
         name: 'The Terminator',
         mode: 'collection',
-        collectionSearches: [
-            'Terminator Collection'
-        ]
+
+        collections: [
+            528
+        ],
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -935,12 +927,16 @@ if (
     'predator': {
         name: 'Predator',
         mode: 'franchise',
-        collectionSearches: [
-            'Predator Collection'
+
+        collections: [
+            399
         ],
-        movieSearches: [
-            'Prey'
-        ]
+
+        movies: [
+            766507
+        ],
+
+        tv: []
     },
 
 
@@ -953,15 +949,17 @@ if (
     'planet-of-the-apes': {
         name: 'Planet of the Apes',
         mode: 'franchise',
-        collectionSearches: [
-            'Planet of the Apes Collection'
+
+        collections: [],
+
+        movies: [
+            61791,
+            119450,
+            281338,
+            653346
         ],
-        movieSearches: [
-            'Rise of the Planet of the Apes',
-            'Dawn of the Planet of the Apes',
-            'War for the Planet of the Apes',
-            'Kingdom of the Planet of the Apes'
-        ]
+
+        tv: []
     },
 
 
@@ -975,11 +973,15 @@ if (
         name: 'Spider-Man',
         mode: 'franchise',
 
-        collectionSearches: [
-            'Spider-Man Collection',
-            'The Amazing Spider-Man Collection',
-            'Spider-Man: Spider-Verse Collection'
-        ]
+        collections: [
+            556,
+            125574,
+            573693
+        ],
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -993,14 +995,16 @@ if (
         name: 'Batman',
         mode: 'franchise',
 
-        collectionSearches: [
-            'Batman Collection',
-            'The Dark Knight Collection'
+        collections: [
+            120794,
+            263
         ],
 
-        movieSearches: [
-            'The Batman'
-        ]
+        movies: [
+            414906
+        ],
+
+        tv: []
     },
 
 
@@ -1013,12 +1017,16 @@ if (
     'john-wick': {
         name: 'John Wick',
         mode: 'franchise',
-        collectionSearches: [
-            'John Wick Collection'
+
+        collections: [
+            404609
         ],
-        movieSearches: [
-            'Ballerina'
-        ]
+
+        movies: [
+            541671
+        ],
+
+        tv: []
     },
 
 
@@ -1032,17 +1040,21 @@ if (
         name: 'The Conjuring Universe',
         mode: 'franchise',
 
-        collectionSearches: [
-            'The Conjuring Collection',
-            'Annabelle Collection',
-            'The Nun Collection'
-        ]
+        collections: [
+            313086,
+            402074,
+            759176
+        ],
+
+        movies: [],
+
+        tv: []
     },
 
 
     /*
      * ==================================================
-     * JURASSIC
+     * JURASSIC PARK
      * ==================================================
      */
 
@@ -1050,9 +1062,13 @@ if (
         name: 'Jurassic Park',
         mode: 'franchise',
 
-        collectionSearches: [
-            'Jurassic Park Collection'
-        ]
+        collections: [
+            328
+        ],
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -1066,9 +1082,13 @@ if (
         name: 'The Matrix',
         mode: 'collection',
 
-        collectionSearches: [
-            'The Matrix Collection'
-        ]
+        collections: [
+            2344
+        ],
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -1082,9 +1102,13 @@ if (
         name: 'Avatar',
         mode: 'collection',
 
-        collectionSearches: [
-            'Avatar Collection'
-        ]
+        collections: [
+            87096
+        ],
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -1098,9 +1122,13 @@ if (
         name: 'The Hunger Games',
         mode: 'collection',
 
-        collectionSearches: [
-            'The Hunger Games Collection'
-        ]
+        collections: [
+            131635
+        ],
+
+        movies: [],
+
+        tv: []
     },
 
 
@@ -1114,11 +1142,15 @@ if (
         name: 'Dhoom',
         mode: 'franchise',
 
-        movieSearches: [
-            'Dhoom',
-            'Dhoom 2',
-            'Dhoom 3'
-        ]
+        collections: [],
+
+        movies: [
+            14175,
+            14172,
+            159024
+        ],
+
+        tv: []
     },
 
 
@@ -1132,10 +1164,14 @@ if (
         name: 'Baahubali',
         mode: 'franchise',
 
-        movieSearches: [
-            'Baahubali: The Beginning',
-            'Baahubali 2: The Conclusion'
-        ]
+        collections: [],
+
+        movies: [
+            256040,
+            350312
+        ],
+
+        tv: []
     },
 
 
@@ -1149,16 +1185,15 @@ if (
         name: 'Dragon Ball',
         mode: 'franchise',
 
-        collectionSearches: [
-            'Dragon Ball Collection'
-        ],
+        collections: [],
 
-        tvSearches: [
-            'Dragon Ball',
-            'Dragon Ball Z',
-            'Dragon Ball GT',
-            'Dragon Ball Super',
-            'Dragon Ball DAIMA'
+        movies: [],
+
+        tv: [
+            12609,
+            12971,
+            61709,
+            12609
         ]
     },
 
@@ -1173,12 +1208,12 @@ if (
         name: 'One Piece',
         mode: 'franchise',
 
-        collectionSearches: [
-            'One Piece Collection'
-        ],
+        collections: [],
 
-        tvSearches: [
-            'One Piece'
+        movies: [],
+
+        tv: [
+            37854
         ]
     },
 
@@ -1193,12 +1228,12 @@ if (
         name: 'Demon Slayer',
         mode: 'franchise',
 
-        movieSearches: [
-            'Demon Slayer: Kimetsu no Yaiba'
-        ],
+        collections: [],
 
-        tvSearches: [
-            'Demon Slayer: Kimetsu no Yaiba'
+        movies: [],
+
+        tv: [
+            85937
         ]
     },
 
@@ -1213,12 +1248,12 @@ if (
         name: 'Pokémon',
         mode: 'franchise',
 
-        collectionSearches: [
-            'Pokémon Collection'
-        ],
+        collections: [],
 
-        tvSearches: [
-            'Pokémon'
+        movies: [],
+
+        tv: [
+            60572
         ]
     }
 
