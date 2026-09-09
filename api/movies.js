@@ -554,22 +554,22 @@ module.exports = async (
 
 /*
  * ==================================================
- * COLLECTIONS
+ * COLLECTION / FRANCHISE ENGINE — STAGE 1
  * ==================================================
  *
- * IMPORTANT:
+ * This system does NOT search movie or TV titles.
  *
- * This system NEVER blindly uses:
+ * It loads only:
  *
- * collections[0]
+ * 1. Exact TMDB movie collection IDs
+ * 2. Exact individual movie IDs
+ * 3. Exact individual TV series IDs
  *
- * A TMDB collection is only used when its name
- * actually matches the requested franchise.
- *
- * Otherwise MaroonFlix falls back to searching
- * movies and TV shows for that franchise.
+ * Stage 2 will populate FRANCHISES with the correct
+ * IDs for every MaroonFlix collection.
  *
  */
+
 
 if (
     String(collection).trim()
@@ -583,21 +583,29 @@ if (
 
     /*
      * ==================================================
-     * COLLECTION CONFIGURATION
+     * FRANCHISE REGISTRY
      * ==================================================
+     *
+     * STAGE 1:
+     *
+     * Keep arrays empty for now.
+     *
+     * Stage 2 will add the exact TMDB IDs.
+     *
      */
 
-    const collectionMap = {
+
+    const FRANCHISES = {
 
         'marvel': {
             name:
                 'Marvel',
 
-            movieQuery:
-                'Marvel',
+            collections: [],
 
-            tvQuery:
-                'Marvel'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -605,11 +613,11 @@ if (
             name:
                 'DC',
 
-            movieQuery:
-                'DC',
+            collections: [],
 
-            tvQuery:
-                'DC'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -617,11 +625,11 @@ if (
             name:
                 'Star Wars',
 
-            movieQuery:
-                'Star Wars',
+            collections: [],
 
-            tvQuery:
-                'Star Wars'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -629,11 +637,11 @@ if (
             name:
                 'Harry Potter',
 
-            movieQuery:
-                'Harry Potter',
+            collections: [],
 
-            tvQuery:
-                'Harry Potter'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -641,11 +649,11 @@ if (
             name:
                 'Doraemon',
 
-            movieQuery:
-                'Doraemon',
+            collections: [],
 
-            tvQuery:
-                'Doraemon'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -653,11 +661,11 @@ if (
             name:
                 'Fast & Furious',
 
-            movieQuery:
-                'Fast and Furious',
+            collections: [],
 
-            tvQuery:
-                'Fast and Furious'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -665,11 +673,11 @@ if (
             name:
                 'Pirates of the Caribbean',
 
-            movieQuery:
-                'Pirates of the Caribbean',
+            collections: [],
 
-            tvQuery:
-                'Pirates of the Caribbean'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -677,11 +685,11 @@ if (
             name:
                 'Resident Evil',
 
-            movieQuery:
-                'Resident Evil',
+            collections: [],
 
-            tvQuery:
-                'Resident Evil'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -689,11 +697,11 @@ if (
             name:
                 'Shinchan',
 
-            movieQuery:
-                'Crayon Shin-chan',
+            collections: [],
 
-            tvQuery:
-                'Crayon Shin-chan'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -701,11 +709,11 @@ if (
             name:
                 'Transformers',
 
-            movieQuery:
-                'Transformers',
+            collections: [],
 
-            tvQuery:
-                'Transformers'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -713,11 +721,11 @@ if (
             name:
                 'Twilight',
 
-            movieQuery:
-                'Twilight',
+            collections: [],
 
-            tvQuery:
-                'Twilight'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -725,11 +733,11 @@ if (
             name:
                 'X-Men',
 
-            movieQuery:
-                'X-Men',
+            collections: [],
 
-            tvQuery:
-                'X-Men'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -737,11 +745,11 @@ if (
             name:
                 'Mission: Impossible',
 
-            movieQuery:
-                'Mission Impossible',
+            collections: [],
 
-            tvQuery:
-                'Mission Impossible'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -749,11 +757,11 @@ if (
             name:
                 'Final Destination',
 
-            movieQuery:
-                'Final Destination',
+            collections: [],
 
-            tvQuery:
-                'Final Destination'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -761,11 +769,11 @@ if (
             name:
                 'The Lord of the Rings',
 
-            movieQuery:
-                'The Lord of the Rings',
+            collections: [],
 
-            tvQuery:
-                'The Lord of the Rings'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -773,11 +781,11 @@ if (
             name:
                 'The Terminator',
 
-            movieQuery:
-                'Terminator',
+            collections: [],
 
-            tvQuery:
-                'Terminator'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -785,11 +793,11 @@ if (
             name:
                 'Predator',
 
-            movieQuery:
-                'Predator',
+            collections: [],
 
-            tvQuery:
-                'Predator'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -797,11 +805,11 @@ if (
             name:
                 'Planet of the Apes',
 
-            movieQuery:
-                'Planet of the Apes',
+            collections: [],
 
-            tvQuery:
-                'Planet of the Apes'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -809,11 +817,11 @@ if (
             name:
                 'Spider-Man',
 
-            movieQuery:
-                'Spider-Man',
+            collections: [],
 
-            tvQuery:
-                'Spider-Man'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -821,11 +829,11 @@ if (
             name:
                 'Batman',
 
-            movieQuery:
-                'Batman',
+            collections: [],
 
-            tvQuery:
-                'Batman'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -833,11 +841,11 @@ if (
             name:
                 'John Wick',
 
-            movieQuery:
-                'John Wick',
+            collections: [],
 
-            tvQuery:
-                'John Wick'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -845,11 +853,11 @@ if (
             name:
                 'The Conjuring Universe',
 
-            movieQuery:
-                'The Conjuring',
+            collections: [],
 
-            tvQuery:
-                'The Conjuring'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -857,11 +865,11 @@ if (
             name:
                 'Jurassic Park',
 
-            movieQuery:
-                'Jurassic Park',
+            collections: [],
 
-            tvQuery:
-                'Jurassic Park'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -869,11 +877,11 @@ if (
             name:
                 'The Matrix',
 
-            movieQuery:
-                'The Matrix',
+            collections: [],
 
-            tvQuery:
-                'The Matrix'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -881,11 +889,11 @@ if (
             name:
                 'Avatar',
 
-            movieQuery:
-                'Avatar',
+            collections: [],
 
-            tvQuery:
-                'Avatar'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -893,11 +901,11 @@ if (
             name:
                 'The Hunger Games',
 
-            movieQuery:
-                'The Hunger Games',
+            collections: [],
 
-            tvQuery:
-                'The Hunger Games'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -905,11 +913,11 @@ if (
             name:
                 'Dhoom',
 
-            movieQuery:
-                'Dhoom',
+            collections: [],
 
-            tvQuery:
-                'Dhoom'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -917,11 +925,11 @@ if (
             name:
                 'Baahubali',
 
-            movieQuery:
-                'Baahubali',
+            collections: [],
 
-            tvQuery:
-                'Baahubali'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -929,11 +937,11 @@ if (
             name:
                 'Dragon Ball',
 
-            movieQuery:
-                'Dragon Ball',
+            collections: [],
 
-            tvQuery:
-                'Dragon Ball'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -941,11 +949,11 @@ if (
             name:
                 'One Piece',
 
-            movieQuery:
-                'One Piece',
+            collections: [],
 
-            tvQuery:
-                'One Piece'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -953,11 +961,11 @@ if (
             name:
                 'Demon Slayer',
 
-            movieQuery:
-                'Demon Slayer',
+            collections: [],
 
-            tvQuery:
-                'Demon Slayer'
+            movies: [],
+
+            tv: []
         },
 
 
@@ -965,11 +973,11 @@ if (
             name:
                 'Pokémon',
 
-            movieQuery:
-                'Pokémon',
+            collections: [],
 
-            tvQuery:
-                'Pokémon'
+            movies: [],
+
+            tv: []
         }
 
     };
@@ -977,18 +985,19 @@ if (
 
     /*
      * ==================================================
-     * GET COLLECTION CONFIG
+     * GET FRANCHISE
      * ==================================================
      */
 
-    const config =
-        collectionMap[
+
+    const franchise =
+        FRANCHISES[
             collectionKey
         ];
 
 
     if (
-        !config
+        !franchise
     ) {
 
         return res
@@ -1008,273 +1017,228 @@ if (
 
     /*
      * ==================================================
-     * NORMALIZE COLLECTION NAME
+     * RESULT STORAGE
      * ==================================================
-     *
-     * Used only for exact/safe comparison.
-     *
      */
 
-    const normalizeCollectionName =
-        value =>
 
-            String(
-                value || ''
-            )
-                .toLowerCase()
-                .replace(
-                    /[^a-z0-9]/g,
-                    ''
-                );
-
-
-    const requestedName =
-        normalizeCollectionName(
-            config.name
-        );
+    let results = [];
 
 
     /*
      * ==================================================
-     * SEARCH TMDB COLLECTIONS
-     * ==================================================
-     */
-
-    const collectionSearch =
-        await tmdbRequest(
-            '/search/collection',
-            {
-
-                query:
-                    config.name,
-
-                language,
-
-                page
-
-            }
-        );
-
-
-    const collections =
-        Array.isArray(
-            collectionSearch.results
-        )
-            ? collectionSearch.results
-            : [];
-
-
-    /*
-     * ==================================================
-     * SAFE COLLECTION MATCH
+     * LOAD EXACT TMDB COLLECTIONS
      * ==================================================
      *
-     * We DO NOT use collections[0].
+     * TMDB collection endpoint returns the actual
+     * `parts` belonging to that exact collection.
      *
      */
 
-    let matchedCollection =
-        collections.find(
-            item => {
-
-                const itemName =
-                    normalizeCollectionName(
-                        item.name
-                    );
-
-
-                return (
-                    itemName ===
-                    requestedName
-                );
-
-            }
-        );
-
-
-    /*
-     * ==================================================
-     * COLLECTION FOUND
-     * ==================================================
-     */
 
     if (
-        matchedCollection &&
-        matchedCollection.id
+        Array.isArray(
+            franchise.collections
+        ) &&
+        franchise.collections.length
     ) {
 
-        const collectionData =
-            await tmdbRequest(
-                `/collection/${encodeURIComponent(
-                    matchedCollection.id
-                )}`,
-                {
-                    language
-                }
+        const collectionGroups =
+            await Promise.all(
+
+                franchise.collections.map(
+                    async collectionId => {
+
+                        try {
+
+                            const data =
+                                await tmdbRequest(
+                                    `/collection/${encodeURIComponent(
+                                        collectionId
+                                    )}`,
+                                    {
+                                        language
+                                    }
+                                );
+
+
+                            return Array.isArray(
+                                data.parts
+                            )
+                                ? data.parts.map(
+                                    normalizeMovie
+                                )
+                                : [];
+
+                        }
+
+                        catch (
+                            collectionError
+                        ) {
+
+                            console.error(
+                                '[Franchise Collection Error]',
+                                collectionKey,
+                                collectionId,
+                                collectionError
+                            );
+
+
+                            return [];
+
+                        }
+
+                    }
+                )
+
             );
 
 
-        const movies =
-            Array.isArray(
-                collectionData.parts
-            )
-                ? collectionData.parts
-                    .map(
-                        normalizeMovie
-                    )
-                    .sort(
-                        (
-                            a,
-                            b
-                        ) => {
-
-                            const dateA =
-                                new Date(
-                                    a.releaseDate ||
-                                    '1900-01-01'
-                                ).getTime();
-
-
-                            const dateB =
-                                new Date(
-                                    b.releaseDate ||
-                                    '1900-01-01'
-                                ).getTime();
-
-
-                            return (
-                                dateA -
-                                dateB
-                            );
-
-                        }
-                    )
-                : [];
-
-
-        /*
-         * Only use the collection
-         * if it actually contains movies.
-         */
-
-        if (
-            movies.length
-        ) {
-
-            return res
-                .status(200)
-                .json({
-
-                    success:
-                        true,
-
-                    mode:
-                        'collection',
-
-                    collection:
-                        collectionKey,
-
-                    collectionName:
-                        collectionData.name ||
-                        config.name,
-
-                    page:
-                        1,
-
-                    totalPages:
-                        1,
-
-                    totalResults:
-                        movies.length,
-
-                    movies:
-                        movies
-
-                });
-
-        }
+        results.push(
+            ...collectionGroups.flat()
+        );
 
     }
 
 
     /*
      * ==================================================
-     * CONTROLLED FRANCHISE SEARCH
+     * LOAD EXACT MOVIES
      * ==================================================
-     *
-     * Used when:
-     *
-     * - No exact TMDB collection exists
-     * - Search results were ambiguous
-     * - The franchise is primarily TV/anime
-     *
      */
 
 
-    const movieSearch =
-        await tmdbRequest(
-            '/search/movie',
-            {
+    if (
+        Array.isArray(
+            franchise.movies
+        ) &&
+        franchise.movies.length
+    ) {
 
-                query:
-                    config.movieQuery,
+        const movieGroups =
+            await Promise.all(
 
-                language,
+                franchise.movies.map(
+                    async movieId => {
 
-                region,
+                        try {
 
-                page,
+                            const movie =
+                                await tmdbRequest(
+                                    `/movie/${encodeURIComponent(
+                                        movieId
+                                    )}`,
+                                    {
+                                        language
+                                    }
+                                );
 
-                include_adult:
-                    'false'
 
-            }
+                            return normalizeMovie(
+                                movie
+                            );
+
+                        }
+
+                        catch (
+                            movieError
+                        ) {
+
+                            console.error(
+                                '[Franchise Movie Error]',
+                                collectionKey,
+                                movieId,
+                                movieError
+                            );
+
+
+                            return null;
+
+                        }
+
+                    }
+                )
+
+            );
+
+
+        results.push(
+            ...movieGroups.filter(
+                Boolean
+            )
         );
 
-
-    const tvSearch =
-        await tmdbRequest(
-            '/search/tv',
-            {
-
-                query:
-                    config.tvQuery,
-
-                language,
-
-                page,
-
-                include_adult:
-                    'false'
-
-            }
-        );
+    }
 
 
     /*
      * ==================================================
-     * NORMALIZE RESULTS
+     * LOAD EXACT TV SHOWS
      * ==================================================
      */
 
-    const movieResults =
+
+    if (
         Array.isArray(
-            movieSearch.results
-        )
-            ? movieSearch.results.map(
-                normalizeMovie
-            )
-            : [];
+            franchise.tv
+        ) &&
+        franchise.tv.length
+    ) {
+
+        const tvGroups =
+            await Promise.all(
+
+                franchise.tv.map(
+                    async tvId => {
+
+                        try {
+
+                            const show =
+                                await tmdbRequest(
+                                    `/tv/${encodeURIComponent(
+                                        tvId
+                                    )}`,
+                                    {
+                                        language
+                                    }
+                                );
 
 
-    const tvResults =
-        Array.isArray(
-            tvSearch.results
-        )
-            ? tvSearch.results.map(
-                normalizeTV
+                            return normalizeTV(
+                                show
+                            );
+
+                        }
+
+                        catch (
+                            tvError
+                        ) {
+
+                            console.error(
+                                '[Franchise TV Error]',
+                                collectionKey,
+                                tvId,
+                                tvError
+                            );
+
+
+                            return null;
+
+                        }
+
+                    }
+                )
+
+            );
+
+
+        results.push(
+            ...tvGroups.filter(
+                Boolean
             )
-            : [];
+        );
+
+    }
 
 
     /*
@@ -1283,15 +1247,23 @@ if (
      * ==================================================
      */
 
+
     const uniqueResults =
         new Map();
 
 
-    [
-        ...movieResults,
-        ...tvResults
-    ].forEach(
+    results.forEach(
         item => {
+
+            if (
+                !item ||
+                !item.id
+            ) {
+
+                return;
+
+            }
+
 
             const uniqueKey =
                 `${item.type}:${item.id}`;
@@ -1314,7 +1286,7 @@ if (
     );
 
 
-    const combined =
+    const movies =
         Array.from(
             uniqueResults.values()
         );
@@ -1322,57 +1294,34 @@ if (
 
     /*
      * ==================================================
-     * SORT
+     * SORT CHRONOLOGICALLY
      * ==================================================
-     *
-     * Higher rated results first.
-     * If ratings are equal,
-     * newer content first.
-     *
      */
 
-    combined.sort(
+
+    movies.sort(
         (
             a,
             b
         ) => {
 
-            const ratingDifference =
-                Number(
-                    b.rating || 0
-                )
-                -
-                Number(
-                    a.rating || 0
-                );
-
-
-            if (
-                ratingDifference !== 0
-            ) {
-
-                return ratingDifference;
-
-            }
-
-
             const dateA =
                 new Date(
                     a.releaseDate ||
-                    '1900-01-01'
+                    '9999-12-31'
                 ).getTime();
 
 
             const dateB =
                 new Date(
                     b.releaseDate ||
-                    '1900-01-01'
+                    '9999-12-31'
                 ).getTime();
 
 
             return (
-                dateB -
-                dateA
+                dateA -
+                dateB
             );
 
         }
@@ -1381,9 +1330,10 @@ if (
 
     /*
      * ==================================================
-     * RETURN SEARCH RESULTS
+     * RESPONSE
      * ==================================================
      */
+
 
     return res
         .status(200)
@@ -1393,32 +1343,25 @@ if (
                 true,
 
             mode:
-                'collection-search',
+                'franchise',
 
             collection:
                 collectionKey,
 
             collectionName:
-                config.name,
+                franchise.name,
 
             page:
-                Number(page) || 1,
+                1,
 
             totalPages:
-                Math.max(
-                    Number(
-                        movieSearch.total_pages || 1
-                    ),
-                    Number(
-                        tvSearch.total_pages || 1
-                    )
-                ),
+                1,
 
             totalResults:
-                combined.length,
+                movies.length,
 
             movies:
-                combined
+                movies
 
         });
 
