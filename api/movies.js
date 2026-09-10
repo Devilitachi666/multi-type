@@ -573,1220 +573,470 @@ module.exports = async (
 
 if (String(collection).trim()) {
 
-  const franchiseResult = await resolveFranchise(
-    collection,
-    language || 'en-US'
-  );
+    const collectionKey =
+        String(collection)
+            .toLowerCase()
+            .trim();
 
-  if (!franchiseResult) {
 
-    return res.status(404).json({
-      success: false,
-      error: 'Collection not found'
-    });
 
-  }
+    const FRANCHISES = {
 
-  return res.status(200).json(franchiseResult);
-}
+    /*
+    |--------------------------------------------------------------------------
+    | MARVEL
+    |--------------------------------------------------------------------------
+    */
+
+    marvel: {
+        name: 'Marvel',
+
+        collections: [
+            556,       // Spider-Man Collection
+            748        // X-Men Collection
+        ],
+
+        movies: [
+            // MCU Phase 1–3
+            1726,      // Iron Man
+            1724,      // The Incredible Hulk
+            10138,     // Iron Man 2
+            10195,     // Thor
+            1771,      // Captain America: The First Avenger
+            24428,     // The Avengers
+            68721,     // Iron Man 3
+            76338,     // Thor: The Dark World
+            100402,    // Captain America: The Winter Soldier
+            118340,    // Guardians of the Galaxy
+            99861,     // Avengers: Age of Ultron
+            102899,    // Ant-Man
+            271110,    // Captain America: Civil War
+            284052,    // Doctor Strange
+            283995,    // Guardians of the Galaxy Vol. 2
+            315635,    // Spider-Man: Homecoming
+            284053,    // Thor: Ragnarok
+            284054,    // Black Panther
+            299536,    // Avengers: Infinity War
+            363088,    // Ant-Man and the Wasp
+            299537,    // Captain Marvel
+            299534,    // Avengers: Endgame
+
+            // Later MCU
+            429617,    // Spider-Man: Far From Home
+            497698,    // Black Widow
+            566525,    // Shang-Chi and the Legend of the Ten Rings
+            524434,    // Eternals
+            634649,    // Spider-Man: No Way Home
+            453395,    // Doctor Strange in the Multiverse of Madness
+            616037,    // Thor: Love and Thunder
+            505642,    // Black Panther: Wakanda Forever
+            640146,    // Ant-Man and the Wasp: Quantumania
+            447365,    // Guardians of the Galaxy Vol. 3
+            609681,    // The Marvels
+            533535     // Deadpool & Wolverine
+        ],
+
+        tv: [
+            85271,     // WandaVision
+            88396,     // The Falcon and the Winter Soldier
+            84958,     // Loki
+            91363,     // What If...?
+            88329,     // Hawkeye
+            92749,     // Moon Knight
+            92783,     // Ms. Marvel
+            92782,     // She-Hulk: Attorney at Law
+            114472,    // Secret Invasion
+            122226,    // Echo
+
+            // Marvel legacy / Netflix
+            61889,     // Daredevil
+            38472,     // Jessica Jones
+            62127,     // Luke Cage
+            67915,     // Iron Fist
+            62286,     // The Defenders
+            67178      // The Punisher
+        ]
+    },
 
 
     /*
-     * ==================================================
-     * FRANCHISE REGISTRY
-     * ==================================================
-     *
-     * STAGE 1:
-     *
-     * Keep arrays empty for now.
-     *
-     * Stage 2 will add the exact TMDB IDs.
-     *
-     */
-
-
-// ============================================================
-// MAROONFLIX FRANCHISE REGISTRY
-// ============================================================
-
-const FRANCHISES = {
-
-  // ------------------------------------------------------------
-  // MARVEL
-  // ------------------------------------------------------------
-  marvel: {
-    name: 'Marvel',
-    collections: [],
-
-    movies: [
-      1726,       // Iron Man
-      10138,      // Iron Man 2
-      68721,      // Iron Man 3
-      1771,       // Captain America
-      100402,     // Captain America: The Winter Soldier
-      271110,     // Captain America: Civil War
-      10195,      // Thor
-      76338,      // Thor: The Dark World
-      284053,     // Thor: Ragnarok
-      616037,     // Thor: Love and Thunder
-      24428,      // The Avengers
-      99861,      // Avengers: Age of Ultron
-      299536,     // Avengers: Infinity War
-      299534,     // Avengers: Endgame
-      118340,     // Guardians of the Galaxy
-      283995,     // Guardians Vol. 2
-      447365,     // Guardians Vol. 3
-      363088,     // Ant-Man
-      640146,     // Ant-Man and the Wasp: Quantumania
-      284052,     // Doctor Strange
-      453395,     // Doctor Strange in the Multiverse of Madness
-      299537,     // Captain Marvel
-      609681,     // The Marvels
-      505642,     // Black Panther
-      497698,     // Black Panther: Wakanda Forever
-      566525,     // Shang-Chi
-      524434,     // Eternals
-      568124,     // Black Widow
-      533535      // Deadpool & Wolverine
-    ],
-
-    tv: [
-      85271,      // WandaVision
-      88396,      // The Falcon and the Winter Soldier
-      84958,      // Loki
-      88329,      // Hawkeye
-      92749,      // Moon Knight
-      92782,      // Ms. Marvel
-      92783,      // She-Hulk
-      114472,     // Secret Invasion
-      91363,      // What If...?
-      138501      // Agatha All Along
-    ],
-
-    search: [
-      'Marvel',
-      'Marvel Studios',
-      'Marvel Cinematic Universe',
-      'Avengers',
-      'Iron Man',
-      'Captain America',
-      'Thor',
-      'Guardians of the Galaxy',
-      'Ant-Man',
-      'Doctor Strange',
-      'Black Panther',
-      'Captain Marvel',
-      'Deadpool',
-      'Fantastic Four',
-      'Daredevil',
-      'Loki',
-      'WandaVision',
-      'Hawkeye',
-      'Moon Knight',
-      'Ms. Marvel',
-      'She-Hulk',
-      'Secret Invasion',
-      'What If'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // DC
-  // ------------------------------------------------------------
-  dc: {
-    name: 'DC',
-    collections: [],
-
-    movies: [
-      49521,
-      209112,
-      297761,
-      297762,
-      141052,
-      297802,
-      287947,
-      474350,
-      464052,
-      436969,
-      436270,
-      594767,
-      298618,
-      565770,
-      572802,
-      414906,
-      791373
-    ],
-
-    tv: [
-      110492,     // Peacemaker
-      100088      // The Penguin
-    ],
-
-    search: [
-      'DC',
-      'DC Comics',
-      'DC Universe',
-      'DC Extended Universe',
-      'Batman',
-      'Superman',
-      'Wonder Woman',
-      'Aquaman',
-      'Justice League',
-      'The Flash',
-      'Shazam',
-      'Suicide Squad',
-      'Green Lantern',
-      'Blue Beetle',
-      'Peacemaker',
-      'The Penguin',
-      'Titans',
-      'Doom Patrol',
-      'Supergirl',
-      'Gotham'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // STAR WARS
-  // ------------------------------------------------------------
-  'star-wars': {
-    name: 'Star Wars',
-
-    // IMPORTANT:
-    // Only the actual Star Wars collection is here.
-    // Collection 119 was removed because it is NOT Star Wars.
-    collections: [
-      10
-    ],
-
-    movies: [
-      1893,
-      1894,
-      1895,
-      11,
-      1891,
-      1892,
-      140607,
-      181808,
-      181812,
-      348350,
-      330459
-    ],
-
-    tv: [
-      82856,      // The Mandalorian
-      83867,      // Andor
-      92830,      // Obi-Wan Kenobi
-      114461,     // Ahsoka
-      115036      // The Book of Boba Fett
-    ],
-
-    search: [
-      'Star Wars',
-      'The Mandalorian',
-      'Andor',
-      'Ahsoka',
-      'Obi-Wan Kenobi',
-      'The Book of Boba Fett',
-      'The Clone Wars',
-      'Star Wars Rebels',
-      'The Bad Batch',
-      'The Acolyte',
-      'Skeleton Crew',
-      'Tales of the Jedi',
-      'Tales of the Empire'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // HARRY POTTER / WIZARDING WORLD
-  // ------------------------------------------------------------
-  'harry-potter': {
-    name: 'Harry Potter',
-
-    collections: [
-      1241
-    ],
-
-    movies: [
-      259316,
-      338953,
-      338952
-    ],
-
-    tv: [],
-
-    search: [
-      'Harry Potter',
-      'Fantastic Beasts',
-      'Wizarding World',
-      'Hogwarts'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // LORD OF THE RINGS / MIDDLE EARTH
-  // ------------------------------------------------------------
-  'lord-of-rings': {
-    name: 'The Lord of the Rings',
-
-    collections: [
-      119
-    ],
-
-    movies: [
-      49051,
-      57158,
-      122917
-    ],
-
-    tv: [
-      84773
-    ],
-
-    search: [
-      'The Lord of the Rings',
-      'Lord of the Rings',
-      'The Hobbit',
-      'Middle-earth',
-      'Rings of Power'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // SPIDER-MAN
-  // ------------------------------------------------------------
-  'spider-man': {
-    name: 'Spider-Man',
-
-    collections: [
-      556
-    ],
-
-    movies: [
-      102382,
-      157336,
-      569094
-    ],
-
-    tv: [],
-
-    search: [
-      'Spider-Man',
-      'Spider Man',
-      'The Amazing Spider-Man',
-      'Spider-Man Homecoming',
-      'Spider-Man Far From Home',
-      'Spider-Man No Way Home',
-      'Into the Spider-Verse',
-      'Across the Spider-Verse',
-      'Venom',
-      'Morbius'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // X-MEN
-  // ------------------------------------------------------------
-  'x-men': {
-    name: 'X-Men',
-
-    collections: [
-      748
-    ],
-
-    movies: [
-      293660,
-      383498,
-      533535,
-      340102
-    ],
-
-    tv: [],
-
-    search: [
-      'X-Men',
-      'X Men',
-      'Wolverine',
-      'Deadpool',
-      'Logan',
-      'The New Mutants',
-      'Legion',
-      'The Gifted'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // FAST & FURIOUS
-  // ------------------------------------------------------------
-  'fast-furious': {
-    name: 'Fast & Furious',
-
-    collections: [
-      9485
-    ],
-
-    movies: [
-      384018
-    ],
-
-    tv: [],
-
-    search: [
-      'Fast and Furious',
-      'Fast Furious',
-      'Fast & Furious',
-      'Hobbs Shaw'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // JOHN WICK
-  // ------------------------------------------------------------
-  'john-wick': {
-    name: 'John Wick',
-
-    collections: [
-      404609
-    ],
-
-    movies: [
-      541671
-    ],
-
-    tv: [],
-
-    search: [
-      'John Wick',
-      'Ballerina',
-      'The Continental'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // TRANSFORMERS
-  // ------------------------------------------------------------
-  transformers: {
-    name: 'Transformers',
-
-    collections: [
-      8650
-    ],
-
-    movies: [
-      424783,
-      667574
-    ],
-
-    tv: [],
-
-    search: [
-      'Transformers',
-      'Bumblebee',
-      'Transformers One'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // TERMINATOR
-  // ------------------------------------------------------------
-  terminator: {
-    name: 'The Terminator',
-
-    collections: [
-      528
-    ],
-
-    movies: [],
-
-    tv: [],
-
-    search: [
-      'Terminator',
-      'Terminator Genisys',
-      'Terminator Salvation',
-      'Terminator Zero'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // PREDATOR
-  // ------------------------------------------------------------
-  predator: {
-    name: 'Predator',
-
-    collections: [
-      399
-    ],
-
-    movies: [
-      766507
-    ],
-
-    tv: [],
-
-    search: [
-      'Predator',
-      'Prey',
-      'Alien vs Predator'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // PLANET OF THE APES
-  // ------------------------------------------------------------
-  'planet-of-the-apes': {
-    name: 'Planet of the Apes',
-
-    collections: [
-      173710,
-      1704
-    ],
-
-    movies: [
-      61791,
-      119450,
-      281338,
-      653346
-    ],
-
-    tv: [],
-
-    search: [
-      'Planet of the Apes',
-      'Rise of the Planet of the Apes',
-      'Dawn of the Planet of the Apes',
-      'War for the Planet of the Apes',
-      'Kingdom of the Planet of the Apes'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // MATRIX
-  // ------------------------------------------------------------
-  matrix: {
-    name: 'The Matrix',
-
-    collections: [
-      2344
-    ],
-
-    movies: [],
-
-    tv: [],
-
-    search: [
-      'The Matrix',
-      'Matrix'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // HUNGER GAMES
-  // ------------------------------------------------------------
-  'hunger-games': {
-    name: 'The Hunger Games',
-
-    collections: [
-      131635
-    ],
-
-    movies: [],
-
-    tv: [],
-
-    search: [
-      'The Hunger Games',
-      'Catching Fire',
-      'Mockingjay'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // PIRATES OF THE CARIBBEAN
-  // ------------------------------------------------------------
-  'pirates-caribbean': {
-    name: 'Pirates of the Caribbean',
-
-    collections: [
-      295
-    ],
-
-    movies: [],
-
-    tv: [],
-
-    search: [
-      'Pirates of the Caribbean'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // RESIDENT EVIL
-  // ------------------------------------------------------------
-  'resident-evil': {
-    name: 'Resident Evil',
-
-    collections: [
-      133352,
-      17255
-    ],
-
-    movies: [
-      460458,
-      138103,
-      460465
-    ],
-
-    tv: [],
-
-    search: [
-      'Resident Evil',
-      'Resident Evil Vendetta',
-      'Resident Evil Death Island',
-      'Resident Evil Degeneration'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // CRAYON SHIN-CHAN
-  // ------------------------------------------------------------
-  shinchan: {
-    name: 'Shinchan',
-
-    collections: [
-      117354
-    ],
-
-    movies: [],
-
-    tv: [
-      9661
-    ],
-
-    search: [
-      'Crayon Shin-chan',
-      'Shinchan',
-      'Shin-chan'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // DORAEMON
-  // ------------------------------------------------------------
-  doraemon: {
-    name: 'Doraemon',
-
-    collections: [],
-
-    movies: [
-      11808,
-      15338,
-      35690,
-      44977,
-      71619,
-      138396,
-      224624,
-      371560,
-      433132,
-      454640,
-      603321,
-      724495
-    ],
-
-    // CORRECT:
-    // 65733 = Doraemon
-    // 37854 = One Piece
-    tv: [
-      65733
-    ],
-
-    search: [
-      'Doraemon',
-      'Doraemon Movie',
-      'Doraemon Nobita'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // ONE PIECE
-  // ------------------------------------------------------------
-  'one-piece': {
-    name: 'One Piece',
-
-    collections: [
-      23456
-    ],
-
-    movies: [
-      21055,
-      16286,
-      23494,
-      44723,
-      11228,
-      123914,
-      38408,
-      288167,
-      572154,
-      900667
-    ],
-
-    // 37854 = One Piece
-    tv: [
-      37854
-    ],
-
-    search: [
-      'One Piece',
-      'One Piece Film',
-      'One Piece Movie',
-      'One Piece Special'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // DEMON SLAYER
-  // ------------------------------------------------------------
-  'demon-slayer': {
-    name: 'Demon Slayer',
-
-    collections: [],
-
-    movies: [
-      635302,
-      1311031
-    ],
-
-    tv: [
-      85937
-    ],
-
-    search: [
-      'Demon Slayer',
-      'Kimetsu no Yaiba',
-      'Demon Slayer Mugen Train',
-      'Demon Slayer Infinity Castle'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // POKEMON
-  // ------------------------------------------------------------
-  pokemon: {
-    name: 'Pokémon',
-
-    collections: [
-      661026
-    ],
-
-    movies: [
-      10991,
-      12614,
-      12615,
-      12616,
-      12617,
-      12618,
-      12619,
-      12620,
-      12621,
-      12622
-    ],
-
-    // 60572 = Pokémon TV
-    tv: [
-      60572
-    ],
-
-    search: [
-      'Pokémon',
-      'Pokemon',
-      'Pokemon Horizons',
-      'Pokemon Journeys',
-      'Pokemon Indigo League',
-      'Pokemon Advanced',
-      'Pokemon Diamond Pearl',
-      'Pokemon Black White',
-      'Pokemon Sun Moon',
-      'Pokemon Master Journeys',
-      'Pokemon Ultimate Journeys'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // DHOOM
-  // ------------------------------------------------------------
-  dhoom: {
-    name: 'Dhoom',
-
-    collections: [],
-
-    movies: [
-      11812,
-      12591,
-      10204
-    ],
-
-    tv: [],
-
-    search: [
-      'Dhoom'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // BAAHUBALI
-  // ------------------------------------------------------------
-  baahubali: {
-    name: 'Baahubali',
-
-    collections: [],
-
-    movies: [
-      256040,
-      350312
-    ],
-
-    tv: [],
-
-    search: [
-      'Baahubali'
-    ],
-
-    searchPages: 3
-  },
-
-
-  // ------------------------------------------------------------
-  // DRAGON BALL
-  // ------------------------------------------------------------
-  'dragon-ball': {
-    name: 'Dragon Ball',
-
-    collections: [],
-
-    movies: [
-      39138,
-      39139,
-      39140,
-      39141,
-      39142
-    ],
-
-    tv: [
-      12609,
-      30668,
-      12610,
-      62715,
-      240411
-    ],
-
-    search: [
-      'Dragon Ball',
-      'Dragon Ball Z',
-      'Dragon Ball GT',
-      'Dragon Ball Super',
-      'Dragon Ball Daima',
-      'Dragon Ball Super Broly',
-      'Dragon Ball Super Hero'
-    ],
-
-    searchPages: 3
-  }
+    |--------------------------------------------------------------------------
+    | DC
+    |--------------------------------------------------------------------------
+    */
+
+    dc: {
+        name: 'DC',
+
+        collections: [
+            702342,    // Justice League Dark Collection
+            290933     // Superman / Batman Animated Collection
+        ],
+
+        movies: [
+            // DCEU
+            49521,     // Man of Steel
+            209458,    // Batman v Superman: Dawn of Justice
+            297761,    // Suicide Squad
+            297762,    // Wonder Woman
+            141052,    // Justice League
+            297802,    // Aquaman
+            287947,    // Shazam!
+            495764,    // Birds of Prey
+            464052,    // Wonder Woman 1984
+            436969,    // The Suicide Squad
+            414906,    // The Batman
+            436270,    // Black Adam
+            298618,    // The Flash
+            565770,    // Blue Beetle
+            572802,    // Aquaman and the Lost Kingdom
+            1096197,   // Superman
+            889737     // Joker: Folie à Deux
+        ],
+
+        tv: [
+            // Add verified DC TV IDs here.
+            // Examples can include:
+            // Peacemaker
+            // The Penguin
+            // Titans
+            // Doom Patrol
+            // Harley Quinn
+            // Superman & Lois
+        ]
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | STAR WARS
+    |--------------------------------------------------------------------------
+    */
+
+    'star-wars': {
+        name: 'Star Wars',
+
+        collections: [
+            10
+        ],
+
+        movies: [],
+
+        tv: [
+            // Add verified Star Wars TV IDs here.
+        ]
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | HARRY POTTER
+    |--------------------------------------------------------------------------
+    */
+
+    'harry-potter': {
+        name: 'Harry Potter',
+
+        collections: [
+            1241
+        ],
+
+        movies: [],
+
+        tv: []
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | LORD OF THE RINGS
+    |--------------------------------------------------------------------------
+    */
+
+    'lord-of-the-rings': {
+        name: 'The Lord of the Rings',
+
+        collections: [
+            119
+        ],
+
+        movies: [],
+
+        tv: []
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SPIDER-MAN
+    |--------------------------------------------------------------------------
+    */
+
+    'spider-man': {
+        name: 'Spider-Man',
+
+        collections: [
+            556
+        ],
+
+        movies: [],
+
+        tv: []
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | X-MEN
+    |--------------------------------------------------------------------------
+    */
+
+    'x-men': {
+        name: 'X-Men',
+
+        collections: [
+            748
+        ],
+
+        movies: [],
+
+        tv: []
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | TERMINATOR
+    |--------------------------------------------------------------------------
+    */
+
+    terminator: {
+        name: 'Terminator',
+
+        collections: [
+            528
+        ],
+
+        movies: [],
+
+        tv: []
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PREDATOR
+    |--------------------------------------------------------------------------
+    */
+
+    predator: {
+        name: 'Predator',
+
+        collections: [
+            399
+        ],
+
+        movies: [],
+
+        tv: []
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | HUNGER GAMES
+    |--------------------------------------------------------------------------
+    */
+
+    'hunger-games': {
+        name: 'The Hunger Games',
+
+        collections: [
+            131635
+        ],
+
+        movies: [],
+
+        tv: []
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | THE MATRIX
+    |--------------------------------------------------------------------------
+    */
+
+    matrix: {
+        name: 'The Matrix',
+
+        collections: [
+            2344
+        ],
+
+        movies: [],
+
+        tv: []
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | TRANSFORMERS
+    |--------------------------------------------------------------------------
+    */
+
+    transformers: {
+        name: 'Transformers',
+
+        collections: [
+            8650
+        ],
+
+        movies: [],
+
+        tv: []
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | JOHN WICK
+    |--------------------------------------------------------------------------
+    */
+
+    'john-wick': {
+        name: 'John Wick',
+
+        collections: [
+            404609
+        ],
+
+        movies: [],
+
+        tv: []
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FAST & FURIOUS
+    |--------------------------------------------------------------------------
+    */
+
+    'fast-furious': {
+        name: 'Fast & Furious',
+
+        collections: [
+            9485
+        ],
+
+        movies: [],
+
+        tv: []
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | ONE PIECE
+    |--------------------------------------------------------------------------
+    */
+
+    'one-piece': {
+        name: 'One Piece',
+
+        collections: [
+            23456
+        ],
+
+        movies: [],
+
+        tv: [
+            37854
+        ]
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DEMON SLAYER
+    |--------------------------------------------------------------------------
+    */
+
+    'demon-slayer': {
+        name: 'Demon Slayer',
+
+        collections: [],
+
+        movies: [
+            635302,
+            1311031
+        ],
+
+        tv: [
+            85937
+        ]
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | POKÉMON
+    |--------------------------------------------------------------------------
+    */
+
+    pokemon: {
+        name: 'Pokémon',
+
+        collections: [],
+
+        movies: [],
+
+        tv: [
+            60572
+        ]
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DORAEMON
+    |--------------------------------------------------------------------------
+    */
+
+    doraemon: {
+        name: 'Doraemon',
+
+        collections: [],
+
+        movies: [],
+
+        tv: [
+            65733
+        ]
+    },
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CRAYON SHIN-CHAN
+    |--------------------------------------------------------------------------
+    */
+
+    shinchan: {
+        name: 'Crayon Shin-chan',
+
+        collections: [
+            117354
+        ],
+
+        movies: [],
+
+        tv: []
+    }
+
 };
-
-
-// ============================================================
-// FRANCHISE RESOLVER
-// ============================================================
-//
-// This does NOT depend on hundreds of manually entered IDs.
-//
-// Process:
-// 1. Load official TMDB collections
-// 2. Load known movie IDs
-// 3. Load known TV IDs
-// 4. Search TMDB automatically using aliases
-// 5. Keep both movies and TV
-// 6. Remove duplicates
-// 7. Sort by release/air date
-//
-// ============================================================
-
-async function resolveFranchise(collection, language = 'en-US') {
-
-  const collectionKey = String(collection || '')
-    .trim()
-    .toLowerCase();
-
-  const franchise = FRANCHISES[collectionKey];
-
-  if (!franchise) {
-    return null;
-  }
-
-  const results = [];
-  const seen = new Set();
-
-  function addResult(item) {
-
-    if (!item || !item.id || !item.type) {
-      return;
-    }
-
-    const key = `${item.type}:${item.id}`;
-
-    if (seen.has(key)) {
-      return;
-    }
-
-    seen.add(key);
-    results.push(item);
-  }
-
-
-  // ----------------------------------------------------------
-  // 1. TMDB COLLECTIONS
-  // ----------------------------------------------------------
-
-  if (
-    Array.isArray(franchise.collections) &&
-    franchise.collections.length
-  ) {
-
-    for (const collectionId of franchise.collections) {
-
-      try {
-
-        const data = await tmdbRequest(
-          `/collection/${collectionId}`,
-          {
-            language
-          }
-        );
-
-        if (
-          data &&
-          Array.isArray(data.parts)
-        ) {
-
-          for (const movie of data.parts) {
-
-            addResult(
-              normalizeMovie(movie)
-            );
-
-          }
-        }
-
-      } catch (error) {
-
-        console.warn(
-          `Franchise collection ${collectionId} failed:`,
-          error.message
-        );
-
-      }
-    }
-  }
-
-
-  // ----------------------------------------------------------
-  // 2. KNOWN MOVIE IDS
-  // ----------------------------------------------------------
-
-  if (
-    Array.isArray(franchise.movies) &&
-    franchise.movies.length
-  ) {
-
-    for (const movieId of franchise.movies) {
-
-      try {
-
-        const movie = await tmdbRequest(
-          `/movie/${movieId}`,
-          {
-            language
-          }
-        );
-
-        if (movie && movie.id) {
-
-          addResult(
-            normalizeMovie(movie)
-          );
-
-        }
-
-      } catch (error) {
-
-        console.warn(
-          `Franchise movie ${movieId} failed:`,
-          error.message
-        );
-
-      }
-    }
-  }
-
-
-  // ----------------------------------------------------------
-  // 3. KNOWN TV IDS
-  // ----------------------------------------------------------
-
-  if (
-    Array.isArray(franchise.tv) &&
-    franchise.tv.length
-  ) {
-
-    for (const tvId of franchise.tv) {
-
-      try {
-
-        const tv = await tmdbRequest(
-          `/tv/${tvId}`,
-          {
-            language
-          }
-        );
-
-        if (tv && tv.id) {
-
-          addResult(
-            normalizeTV(tv)
-          );
-
-        }
-
-      } catch (error) {
-
-        console.warn(
-          `Franchise TV ${tvId} failed:`,
-          error.message
-        );
-
-      }
-    }
-  }
-
-
-  // ----------------------------------------------------------
-  // 4. AUTOMATIC TMDB SEARCH
-  // ----------------------------------------------------------
-  //
-  // Search aliases instead of manually adding every ID.
-  //
-  // /search/multi returns movies + TV.
-  //
-  // ----------------------------------------------------------
-
-  if (
-    Array.isArray(franchise.search) &&
-    franchise.search.length
-  ) {
-
-    const searchPages = Math.max(
-      1,
-      Math.min(
-        Number(franchise.searchPages) || 1,
-        5
-      )
-    );
-
-
-    for (const searchTerm of franchise.search) {
-
-      if (!searchTerm) {
-        continue;
-      }
-
-
-      for (let page = 1; page <= searchPages; page++) {
-
-        try {
-
-          const data = await tmdbRequest(
-            '/search/multi',
-            {
-              query: searchTerm,
-              page,
-              language,
-              include_adult: false
-            }
-          );
-
-
-          if (
-            !data ||
-            !Array.isArray(data.results)
-          ) {
-            continue;
-          }
-
-
-          for (const item of data.results) {
-
-            if (!item || !item.id) {
-              continue;
-            }
-
-
-            // ------------------------------------------------
-            // MOVIE
-            // ------------------------------------------------
-
-            if (item.media_type === 'movie') {
-
-              addResult(
-                normalizeMovie(item)
-              );
-
-            }
-
-
-            // ------------------------------------------------
-            // TV
-            // ------------------------------------------------
-
-            else if (item.media_type === 'tv') {
-
-              addResult(
-                normalizeTV(item)
-              );
-
-            }
-
-          }
-
-        } catch (error) {
-
-          console.warn(
-            `Franchise search "${searchTerm}" page ${page} failed:`,
-            error.message
-          );
-
-          break;
-        }
-      }
-    }
-  }
-
-
-  // ----------------------------------------------------------
-  // 5. SORT
-  // ----------------------------------------------------------
-
-  results.sort((a, b) => {
-
-    const dateA =
-      a.releaseDate ||
-      a.firstAirDate ||
-      '';
-
-    const dateB =
-      b.releaseDate ||
-      b.firstAirDate ||
-      '';
-
-    return String(dateB)
-      .localeCompare(String(dateA));
-
-  });
-
-
-  // ----------------------------------------------------------
-  // 6. RETURN
-  // ----------------------------------------------------------
-
-  return {
-
-    success: true,
-
-    mode: 'franchise',
-
-    collection: collectionKey,
-
-    collectionName: franchise.name,
-
-    page: 1,
-
-    totalPages: 1,
-
-    totalResults: results.length,
-
-    movies: results
-  };
-}
-
     /*
      * ==================================================
      * GET FRANCHISE
