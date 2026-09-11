@@ -1307,7 +1307,7 @@ if (String(collection).trim()) {
                 'franchise',
 
             collection:
-                resolvedFranchiseKey,
+                collectionKey,
 
             collectionName:
                 franchise.name,
