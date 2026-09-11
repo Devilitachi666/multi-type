@@ -847,7 +847,7 @@ if (String(collection).trim()) {
         ]
     },
 
-    predator: {
+        predator: {
         name: 'Predator',
         collections: [
             399
@@ -858,6 +858,41 @@ if (String(collection).trim()) {
             'Predator'
         ]
     },
+
+    piratesofthecaribbean: {
+        name: 'Pirates of the Caribbean',
+        collections: [
+            295
+        ],
+        movies: [],
+        tv: [],
+        search: [
+            'Pirates of the Caribbean',
+            'Pirates of Caribbean',
+            'POTC',
+            'Jack Sparrow'
+        ]
+    },
+
+    residentevil: {
+        name: 'Resident Evil',
+        collections: [
+            17255,      // main live-action film series (2002–2016)
+            133352      // CGI animated film collection (Degeneration, Damnation, Vendetta, Death Island)
+        ],
+        movies: [
+            460458      // Welcome to Raccoon City (2021 reboot, not part of collection 17255)
+        ],
+        tv: [
+            110642      // Resident Evil: Infinite Darkness
+        ],
+        search: [
+            'Resident Evil',
+            'Biohazard',
+            'Umbrella Corporation'
+        ]
+    },
+
 
     onepiece: {
         name: 'One Piece',
