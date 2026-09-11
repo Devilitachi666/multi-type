@@ -786,7 +786,7 @@ if (String(collection).trim()) {
         ]
     },
 
-    hungerGames: {
+    hungergames: {
         name: 'The Hunger Games',
         collections: [
             131635
@@ -882,7 +882,7 @@ if (String(collection).trim()) {
         ]
     },
 
-    demonSlayer: {
+    demonslayer: {
         name: 'Demon Slayer',
         collections: [],
         movies: [
@@ -944,7 +944,7 @@ if (String(collection).trim()) {
     }
 };
 
-    /*
+     /*
      * ==================================================
      * GET FRANCHISE
      * ==================================================
@@ -1307,7 +1307,7 @@ if (String(collection).trim()) {
                 'franchise',
 
             collection:
-                collectionKey,
+                resolvedFranchiseKey,
 
             collectionName:
                 franchise.name,
