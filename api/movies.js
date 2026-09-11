@@ -573,13 +573,6 @@ module.exports = async (
 
 if (String(collection).trim()) {
 
-    const collectionKey =
-        String(collection)
-            .toLowerCase()
-            .trim();
-
-
-
    const FRANCHISES = {
 
     marvel: {
@@ -944,22 +937,81 @@ if (String(collection).trim()) {
     }
 };
 
-     /*
+          /*
      * ==================================================
-     * GET FRANCHISE
+     * RESOLVE COLLECTION NAME -> INTERNAL FRANCHISE KEY
      * ==================================================
+     *
+     * Robustly matches "Star Wars", "star wars", "STARWARS",
+     * "star-wars", etc. against the internal FRANCHISES keys.
+     *
+     * Exact key/name matches are checked FIRST, and only if
+     * none is found do we fall back to the `search` alias
+     * lists. This prevents a generic alias (e.g. "Avengers"
+     * inside marvel.search, "Deadpool" inside xmen.search)
+     * from ever winning over an exact match belonging to a
+     * different franchise.
      */
 
+    const normalizeCollectionName = value =>
+        String(value || '')
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, '');
+
+    const requestedKey =
+        String(collection || '').trim();
+
+    const normalizedRequestedKey =
+        normalizeCollectionName(requestedKey);
+
+    let resolvedKey = null;
+
+    // Pass 1: exact internal key / franchise.name match
+    for (const [key, entry] of Object.entries(FRANCHISES)) {
+
+        const exactCandidates = [key, entry.name];
+
+        if (
+            exactCandidates.some(
+                candidate =>
+                    normalizeCollectionName(candidate) ===
+                    normalizedRequestedKey
+            )
+        ) {
+            resolvedKey = key;
+            break;
+        }
+    }
+
+    // Pass 2: only if no exact match, fall back to search aliases
+    if (!resolvedKey) {
+
+        for (const [key, entry] of Object.entries(FRANCHISES)) {
+
+            const aliasCandidates =
+                Array.isArray(entry.search)
+                    ? entry.search
+                    : [];
+
+            if (
+                aliasCandidates.some(
+                    candidate =>
+                        normalizeCollectionName(candidate) ===
+                        normalizedRequestedKey
+                )
+            ) {
+                resolvedKey = key;
+                break;
+            }
+        }
+    }
 
     const franchise =
-        FRANCHISES[
-            collectionKey
-        ];
+        resolvedKey
+            ? FRANCHISES[resolvedKey]
+            : null;
 
-
-    if (
-        !franchise
-    ) {
+    if (!franchise) {
 
         return res
             .status(404)
