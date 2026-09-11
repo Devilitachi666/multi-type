@@ -1091,7 +1091,7 @@ if (String(collection).trim()) {
 
                             console.error(
                                 '[Franchise Collection Error]',
-                                collectionKey,
+                                resolvedKey,
                                 collectionId,
                                 collectionError
                             );
@@ -1159,7 +1159,7 @@ if (String(collection).trim()) {
 
                             console.error(
                                 '[Franchise Movie Error]',
-                                collectionKey,
+                                resolvedKey,
                                 movieId,
                                 movieError
                             );
@@ -1229,7 +1229,7 @@ if (String(collection).trim()) {
 
                             console.error(
                                 '[Franchise TV Error]',
-                                collectionKey,
+                                resolvedKey,
                                 tvId,
                                 tvError
                             );
@@ -1359,7 +1359,7 @@ if (String(collection).trim()) {
                 'franchise',
 
             collection:
-                collectionKey,
+                resolvedKey,
 
             collectionName:
                 franchise.name,
