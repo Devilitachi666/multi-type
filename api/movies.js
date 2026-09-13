@@ -3014,10 +3014,12 @@ if (
          */
 
         let endpoint =
-            '/movie/popular';
+    '/movie/popular';
 
-        let categoryName =
-            'popular';
+let categoryName =
+    'popular';
+
+let discoverParams = null;
 
 
         switch (
@@ -3071,6 +3073,39 @@ if (
 
                 break;
 
+                case 'bollywood':
+
+    endpoint =
+        '/discover/movie';
+
+    categoryName =
+        'bollywood';
+
+    discoverParams = {
+        with_origin_country: 'IN',
+        with_original_language: 'hi',
+        sort_by: 'popularity.desc'
+    };
+
+    break;
+
+
+case 'hollywood':
+
+    endpoint =
+        '/discover/movie';
+
+    categoryName =
+        'hollywood';
+
+    discoverParams = {
+        with_origin_country: 'US',
+        with_original_language: 'en',
+        sort_by: 'popularity.desc'
+    };
+
+    break;
+
 
             default:
 
@@ -3085,21 +3120,23 @@ if (
         }
 
 
-        const data =
-            await tmdbRequest(
-                endpoint,
-                {
-                    language,
-                    region,
-                    page,
+       const data =
+    await tmdbRequest(
+        endpoint,
+        {
+            language,
+            region,
+            page,
 
-                    include_adult:
-                        'false',
+            ...(discoverParams || {}),
 
-                    include_video:
-                        'false'
-                }
-            );
+            include_adult:
+                'false',
+
+            include_video:
+                'false'
+        }
+    );
 
 
         return res.status(200).json({
