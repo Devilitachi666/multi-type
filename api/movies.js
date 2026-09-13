@@ -222,16 +222,15 @@ module.exports = async (
 
     try {
 
-       const {
+      const {
     id,
     type = '',
     query = '',
     genre = '',
     category = '',
     collection = '',
-    ott = '',
-    ott_providers = '',
     year = '',
+    genz = '',
     page = '1',
     language = 'en-US',
     region = 'IN'
@@ -2513,6 +2512,428 @@ if (
                 results
 
         });
+
+}
+
+        /*
+ * ==================================================
+ * GEN Z
+ * ==================================================
+ *
+ * /api/movies?genz=trending
+ * /api/movies?genz=anime
+ * /api/movies?genz=superhero
+ * /api/movies?genz=viral
+ */
+
+if (String(genz).trim()) {
+
+    const selectedGenZ =
+        String(genz).trim().toLowerCase();
+
+    let movieData = {
+        results: [],
+        page: Number(page) || 1,
+        total_pages: 1,
+        total_results: 0
+    };
+
+    let tvData = {
+        results: [],
+        page: Number(page) || 1,
+        total_pages: 1,
+        total_results: 0
+    };
+
+
+    /*
+     * --------------------------------------------------
+     * TRENDING
+     * --------------------------------------------------
+     */
+
+    if (selectedGenZ === 'trending') {
+
+        const [
+            trendingMovies,
+            trendingTV
+        ] = await Promise.all([
+
+            tmdbRequest(
+                '/trending/movie/week',
+                {
+                    language
+                }
+            ),
+
+            tmdbRequest(
+                '/trending/tv/week',
+                {
+                    language
+                }
+            )
+
+        ]);
+
+        movieData = trendingMovies;
+        tvData = trendingTV;
+
+    }
+
+
+    /*
+     * --------------------------------------------------
+     * ANIME
+     * --------------------------------------------------
+     */
+
+    else if (selectedGenZ === 'anime') {
+
+        const [
+            animeMovies,
+            animeTV
+        ] = await Promise.all([
+
+            tmdbRequest(
+                '/discover/movie',
+                {
+                    language,
+                    region,
+                    page,
+
+                    with_genres: '16',
+                    with_original_language: 'ja',
+                    with_origin_country: 'JP',
+
+                    sort_by:
+                        'popularity.desc',
+
+                    'vote_count.gte':
+                        '10',
+
+                    include_adult:
+                        'false',
+
+                    include_video:
+                        'false'
+                }
+            ),
+
+            tmdbRequest(
+                '/discover/tv',
+                {
+                    language,
+                    page,
+
+                    with_genres: '16',
+                    with_original_language: 'ja',
+                    with_origin_country: 'JP',
+
+                    sort_by:
+                        'popularity.desc',
+
+                    'vote_count.gte':
+                        '10',
+
+                    include_adult:
+                        'false'
+                }
+            )
+
+        ]);
+
+        movieData = animeMovies;
+        tvData = animeTV;
+
+    }
+
+
+    /*
+     * --------------------------------------------------
+     * SUPERHERO
+     * --------------------------------------------------
+     */
+
+    else if (selectedGenZ === 'superhero') {
+
+        const [
+            superheroMovies,
+            superheroTV
+        ] = await Promise.all([
+
+            tmdbRequest(
+                '/discover/movie',
+                {
+                    language,
+                    region,
+                    page,
+
+                    /*
+                     * Superhero / superhero team
+                     */
+                    with_keywords:
+                        '9714|155030',
+
+                    sort_by:
+                        'popularity.desc',
+
+                    'vote_count.gte':
+                        '10',
+
+                    include_adult:
+                        'false',
+
+                    include_video:
+                        'false'
+                }
+            ),
+
+            tmdbRequest(
+                '/discover/tv',
+                {
+                    language,
+                    page,
+
+                    /*
+                     * Superhero / superhero team
+                     */
+                    with_keywords:
+                        '9714|155030',
+
+                    sort_by:
+                        'popularity.desc',
+
+                    'vote_count.gte':
+                        '10',
+
+                    include_adult:
+                        'false'
+                }
+            )
+
+        ]);
+
+        movieData = superheroMovies;
+        tvData = superheroTV;
+
+    }
+
+
+    /*
+     * --------------------------------------------------
+     * VIRAL
+     * --------------------------------------------------
+     */
+
+    else if (selectedGenZ === 'viral') {
+
+        const viralData =
+            await tmdbRequest(
+                '/trending/all/day',
+                {
+                    language
+                }
+            );
+
+        const results =
+            Array.isArray(
+                viralData.results
+            )
+                ? viralData.results
+                : [];
+
+
+        const movies =
+            results
+                .filter(
+                    item =>
+                        item.media_type ===
+                        'movie'
+                )
+                .map(
+                    normalizeMovie
+                );
+
+
+        const tvShows =
+            results
+                .filter(
+                    item =>
+                        item.media_type ===
+                        'tv'
+                )
+                .map(
+                    normalizeTV
+                );
+
+
+        const combined = [
+            ...movies,
+            ...tvShows
+        ];
+
+
+        return res.status(200).json({
+
+            success: true,
+
+            mode:
+                'genz',
+
+            genz:
+                selectedGenZ,
+
+            page:
+                Number(page) || 1,
+
+            totalPages:
+                viralData.total_pages || 1,
+
+            totalResults:
+                combined.length,
+
+            movies:
+                combined
+
+        });
+
+    }
+
+
+    /*
+     * --------------------------------------------------
+     * INVALID GEN Z CATEGORY
+     * --------------------------------------------------
+     */
+
+    else {
+
+        return res.status(400).json({
+
+            success: false,
+
+            error:
+                'Invalid GenZ category'
+
+        });
+
+    }
+
+
+    /*
+     * --------------------------------------------------
+     * NORMALIZE MOVIES
+     * --------------------------------------------------
+     */
+
+    const movies =
+        Array.isArray(
+            movieData.results
+        )
+            ? movieData.results
+                .map(normalizeMovie)
+            : [];
+
+
+    /*
+     * --------------------------------------------------
+     * NORMALIZE TV
+     * --------------------------------------------------
+     */
+
+    const tvShows =
+        Array.isArray(
+            tvData.results
+        )
+            ? tvData.results
+                .map(normalizeTV)
+            : [];
+
+
+    /*
+     * --------------------------------------------------
+     * COMBINE
+     * --------------------------------------------------
+     */
+
+    const combined = [
+        ...movies,
+        ...tvShows
+    ];
+
+
+    /*
+     * --------------------------------------------------
+     * REMOVE DUPLICATES
+     * --------------------------------------------------
+     */
+
+    const unique =
+        new Map();
+
+    combined.forEach(item => {
+
+        if (
+            !item ||
+            !item.id ||
+            !item.type
+        ) {
+            return;
+        }
+
+        const key =
+            `${item.type}:${item.id}`;
+
+        if (
+            !unique.has(key)
+        ) {
+            unique.set(
+                key,
+                item
+            );
+        }
+
+    });
+
+
+    const finalResults =
+        Array.from(
+            unique.values()
+        );
+
+
+    /*
+     * --------------------------------------------------
+     * RESPONSE
+     * --------------------------------------------------
+     */
+
+    return res.status(200).json({
+
+        success: true,
+
+        mode:
+            'genz',
+
+        genz:
+            selectedGenZ,
+
+        page:
+            Number(page) || 1,
+
+        totalPages:
+            Math.max(
+                movieData.total_pages || 1,
+                tvData.total_pages || 1
+            ),
+
+        totalResults:
+            finalResults.length,
+
+        movies:
+            finalResults
+
+    });
 
 }
 
