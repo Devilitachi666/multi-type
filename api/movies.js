@@ -573,516 +573,357 @@ module.exports = async (
 
 if (String(collection).trim()) {
 
-const FRANCHISES = {
-
-    marvel: {
-        name: 'Marvel',
-        collections: [],
-        movies: [
-            // Existing verified entries
-            1726,       // Iron Man
-            10138,      // Iron Man 2
-            68721,      // Iron Man 3
-            99861,      // Avengers: Age of Ultron
-            100402,     // Captain America: The Winter Soldier
-            271110,     // Captain America: Civil War
-            299536,     // Avengers: Infinity War
-            299534,     // Avengers: Endgame
-            566525,     // Shang-Chi
-            497698,     // Black Widow
-            634649,     // Spider-Man: No Way Home
-            616037,     // Thor: Love and Thunder
-            609681,     // The Marvels
-            822119,     // Captain America: Brave New World
-            986056,     // Thunderbolts*
-
-            // Additional major MCU movies
-            1724,       // The Incredible Hulk
-            10195,      // Thor
-            76338,      // Thor: The Dark World
-            284053,     // Thor: Ragnarok
-            284052,     // Doctor Strange
-            453395,     // Doctor Strange in the Multiverse of Madness
-            118340,     // Guardians of the Galaxy
-            283995,     // Guardians of the Galaxy Vol. 2
-            363088,     // Guardians of the Galaxy Vol. 3
-            102899,     // Ant-Man
-            345940,     // Ant-Man and the Wasp
-            640146,     // Ant-Man and the Wasp: Quantumania
-            284054,     // Black Panther
-            505642,     // Black Panther: Wakanda Forever
-            299537,     // Captain Marvel
-            524434,     // Eternals
-
-            // Major non-MCU Marvel
-            557,        // Spider-Man
-            558,        // Spider-Man 2
-            559,        // Spider-Man 3
-            1930,       // The Amazing Spider-Man
-            102382,     // The Amazing Spider-Man 2
-            293660,     // Deadpool
-            383498,     // Deadpool 2
-            533535,     // Deadpool & Wolverine
-            447152,     // Logan
-            263115,     // X-Men Origins: Wolverine
-            76170       // The Wolverine
-        ],
-        tv: [
-            85271,      // WandaVision
-            88396,      // The Falcon and the Winter Soldier
-            84958,      // Loki
-            88329,      // Hawkeye
-            92749,      // Moon Knight
-            92782,      // Ms. Marvel
-            92783,      // She-Hulk
-            91363,      // What If...?
-            114472,     // Secret Invasion
-            138501,     // Agatha All Along
-            122226,     // Echo
-            202555,     // Daredevil: Born Again
-            114471,     // Ironheart
-            138505      // Marvel Zombies
-        ],
-        search: [
-            'Marvel',
-            'Marvel Studios',
-            'MCU',
-            'Avengers',
-            'Iron Man',
-            'Captain America',
-            'Thor',
-            'Guardians of the Galaxy',
-            'Doctor Strange',
-            'Black Panther',
-            'Ant-Man',
-            'Deadpool',
-            'Fantastic Four',
-            'Daredevil',
-            'Loki',
-            'WandaVision',
-            'X-Men',
-            'Venom'
-        ]
-    },
-
-    dc: {
-        name: 'DC',
-        collections: [],
-        movies: [
-            297762,     // Wonder Woman
-            464052,     // Wonder Woman 1984
-            141052,     // Justice League
-            297761,     // Suicide Squad
-            436969,     // The Suicide Squad
-            49521,      // Man of Steel
-            209112,     // Batman v Superman
-            572802,     // Aquaman
-            791373,     // Zack Snyder's Justice League
-            298618,     // The Flash
-            414906,     // The Batman
-            616820,     // Blue Beetle
-            955916,     // Superman
-            1156593     // Supergirl
-        ],
-        tv: [
-            110492,     // Peacemaker
-            100088      // The Penguin
-        ],
-        search: [
-            'DC',
-            'DC Comics',
-            'DC Universe',
-            'Batman',
-            'Superman',
-            'Wonder Woman',
-            'Aquaman',
-            'Justice League',
-            'Suicide Squad',
-            'The Flash',
-            'Green Lantern',
-            'Peacemaker',
-            'The Penguin',
-            'Supergirl'
-        ]
-    },
-
-    starwars: {
-        name: 'Star Wars',
-        collections: [
-            10
-        ],
-        movies: [
-            12180
-        ],
-        tv: [
-            4194,
-            60554,
-            82856,
-            83867,
-            92830,
-            105971,
-            114461,
-            114478,
-            115036,
-            79093,
-            202879,
-
-            // Additional verified/current Star Wars TV
-            114479,     // The Acolyte
-            253760      // LEGO Star Wars: Rebuild the Galaxy
-        ],
-        search: [
-            'Star Wars',
-            'starwars',
-            'star-wars',
-            'The Mandalorian',
-            'Andor',
-            'Obi-Wan Kenobi',
-            'Ahsoka',
-            'The Book of Boba Fett',
-            'The Clone Wars',
-            'Rebels',
-            'The Bad Batch',
-            'Skeleton Crew',
-            'Visions',
-            'The Acolyte',
-            'Tales of the Jedi',
-            'Tales of the Empire'
-        ]
-    },
-
-    harrypotter: {
-        name: 'Harry Potter',
-        collections: [
-            1241
-        ],
-        movies: [
-            259316,
-            338952,
-            338953
-        ],
-        tv: [],
-        search: [
-            'Harry Potter',
-            'Fantastic Beasts',
-            'Wizarding World'
-        ]
-    },
-
-    lordoftherings: {
-        name: 'Lord of the Rings',
-        collections: [
-            119,
-            121938
-        ],
-        movies: [
-            839033
-        ],
-        tv: [
-            84773
-        ],
-        search: [
-            'Lord of the Rings',
-            'lordoftherings',
-            'lord-of-the-rings',
-            'The Lord of the Rings',
-            'The Hobbit',
-            'Rings of Power',
-            'Middle-earth',
-            'Middle Earth'
-        ]
-    },
-
-    spiderman: {
-        name: 'Spider-Man',
-        collections: [
-            556,
-            125574
-        ],
-        movies: [
-            315635,
-            429617,
-            634649,
-            324857,
-            569094
-        ],
-        tv: [
-            888,        // Spider-Man (1994)
-            34391,      // Marvel's Ultimate Spider-Man
-            3854,       // The Spectacular Spider-Man
-            10079,      // Spider-Man Unlimited
-            1269        // Spider-Man and His Amazing Friends
-        ],
-        search: [
-            'Spider-Man',
-            'spiderman',
-            'spider-man',
-            'Spider Man',
-            'Spider-Verse',
-            'Spider-Man: Homecoming',
-            'Spider-Man: Far From Home',
-            'Spider-Man: No Way Home',
-            'Spider-Man: Into the Spider-Verse',
-            'Spider-Man: Across the Spider-Verse'
-        ]
-    },
-
-    fastfurious: {
-        name: 'Fast & Furious',
-        collections: [
-            9485
-        ],
-        movies: [],
-        tv: [],
-        search: [
-            'Fast & Furious',
-            'fastandfurious',
-            'fast-and-furious',
-            'Fast and Furious',
-            'The Fast and the Furious'
-        ]
-    },
-
-    johnwick: {
-        name: 'John Wick',
-        collections: [
-            404609
-        ],
-        movies: [
-            541671
-        ],
-        tv: [
-            72710
-        ],
-        search: [
-            'John Wick',
-            'Ballerina',
-            'The Continental'
-        ]
-    },
-
-    hungergames: {
-        name: 'The Hunger Games',
-        collections: [
-            131635
-        ],
-        movies: [
-            695721
-        ],
-        tv: [],
-        search: [
-            'The Hunger Games',
-            'Hunger Games',
-            'Ballad of Songbirds and Snakes'
-        ]
-    },
-
-    matrix: {
-        name: 'The Matrix',
-        collections: [
-            2344
-        ],
-        movies: [],
-        tv: [],
-        search: [
-            'The Matrix',
-            'Matrix'
-        ]
-    },
-
-    transformers: {
-        name: 'Transformers',
-        collections: [
-            8650
-        ],
-        movies: [
-            424783,
-            667574
-        ],
-        tv: [],
-        search: [
-            'Transformers',
-            'Bumblebee',
-            'Transformers One'
-        ]
-    },
-
-    xmen: {
-        name: 'X-Men',
-        collections: [
-            748
-        ],
-        movies: [
-            263115,
-            76170,
-            447152
-        ],
-        tv: [
-            138502
-        ],
-        search: [
-            'X-Men',
-            'X Men',
-            'Wolverine',
-            'Deadpool',
-            'X-Men 97'
-        ]
-    },
-
-    terminator: {
-        name: 'Terminator',
-        collections: [
-            528
-        ],
-        movies: [],
-        tv: [
-            239287
-        ],
-        search: [
-            'Terminator',
-            'Terminator Zero'
-        ]
-    },
-
-    predator: {
-        name: 'Predator',
-        collections: [
-            399
-        ],
-        movies: [
-            1376434
-        ],
-        tv: [],
-        search: [
-            'Predator',
-            'Predator: Killer of Killers'
-        ]
-    },
-
-    piratesofthecaribbean: {
-        name: 'Pirates of the Caribbean',
-        collections: [
-            295
-        ],
-        movies: [],
-        tv: [],
-        search: [
-            'Pirates of the Caribbean',
-            'Pirates of Caribbean',
-            'POTC',
-            'Jack Sparrow'
-        ]
-    },
-
-    residentevil: {
-        name: 'Resident Evil',
-        collections: [
-            17255,
-            133352
-        ],
-        movies: [
-            460458
-        ],
-        tv: [
-            110642
-        ],
-        search: [
-            'Resident Evil',
-            'Biohazard',
-            'Umbrella Corporation'
-        ]
-    },
-
-    onepiece: {
-        name: 'One Piece',
-        collections: [
-            23456
-        ],
-        movies: [],
-        tv: [
-            37854,
-            111110
-        ],
-        search: [
-            'One Piece',
-            'One Piece Film',
-            'One Piece Movie'
-        ]
-    },
-
-    demonslayer: {
-        name: 'Demon Slayer',
-        collections: [],
-        movies: [
-            635302,
-            1067282,
-            1311031
-        ],
-        tv: [
-            85937
-        ],
-        search: [
-            'Demon Slayer',
-            'demonslayer',
-            'demon-slayer',
-            'Kimetsu no Yaiba'
-        ]
-    },
-
-    pokemon: {
-        name: 'Pokémon',
-        collections: [],
-        movies: [],
-        tv: [
-            60572,
-            220150
-        ],
-        search: [
-            'Pokémon',
-            'Pokemon',
-            'pokemon',
-            'Pokémon the Series',
-            'Pokémon Horizons'
-        ]
-    },
-
-    doraemon: {
-        name: 'Doraemon',
-        collections: [
-            148065,
-            728776
-        ],
-        movies: [],
-        tv: [
-            65733,
-            57911
-        ],
-        search: [
-            'Doraemon',
-            'Doraemon Movie',
-            'Doraemon Nobita'
-        ]
-    },
-
-    shinchan: {
-        name: 'Crayon Shin-chan',
-        collections: [
-            117354
-        ],
-        movies: [],
-        tv: [
-            30623
-        ],
-        search: [
-            'Crayon Shin-chan',
-            'crayonshinchan',
-            'shinchan',
-            'shin-chan',
-            'Shin-chan',
-            'Shinchan'
-        ]
-    }
-};
+  const FRANCHISES = {
+ 
+        marvel: {
+            name: 'Marvel',
+            collections: [],
+            movies: [
+                1726,       // Iron Man
+                10138,      // Iron Man 2
+                68721,      // Iron Man 3
+                99861,      // Avengers
+                100402,     // Captain America: The Winter Soldier
+                271110,     // Captain America: Civil War
+                299536,     // Avengers: Infinity War
+                299534,     // Avengers: Endgame
+                566525,     // Shang-Chi
+                497698,     // Black Widow
+                634649,     // Spider-Man: No Way Home
+                616037,     // Thor: Love and Thunder
+                609681,     // The Marvels
+                822119,     // Captain America: Brave New World
+                986056      // Thunderbolts*
+            ],
+            tv: [
+                85271,      // WandaVision
+                88396,      // The Falcon and the Winter Soldier
+                84958,      // Loki
+                88329,      // Hawkeye
+                92749,      // Moon Knight
+                92782,      // Ms. Marvel
+                92783,      // She-Hulk
+                91363,      // What If...?
+                114472,     // Secret Invasion
+                138501,     // Agatha All Along
+                122226,     // Echo — verified: themoviedb.org/tv/122226
+                202555,     // Daredevil: Born Again — verified: themoviedb.org/tv/202555
+                114471,     // Ironheart — verified: themoviedb.org/tv/114471
+                138505      // Marvel Zombies — verified: themoviedb.org/tv/138505
+            ],
+            search: [
+                'Marvel', 'Marvel Studios', 'Avengers', 'Iron Man', 'Captain America',
+                'Thor', 'Guardians of the Galaxy', 'Doctor Strange', 'Black Panther',
+                'Ant-Man', 'Deadpool', 'Fantastic Four', 'Daredevil', 'Loki',
+                'WandaVision', 'X-Men', 'Venom'
+            ]
+        },
+ 
+        dc: {
+            name: 'DC',
+            collections: [],
+            movies: [
+                297762,     // Wonder Woman
+                464052,     // Wonder Woman 1984
+                141052,     // Justice League
+                297761,     // Suicide Squad
+                436969,     // The Suicide Squad
+                49521,      // Man of Steel
+                209112,     // Batman v Superman
+                572802,     // Aquaman
+                791373,     // Zack Snyder's Justice League
+                298618,     // The Flash
+                414906,     // The Batman
+                616820,     // Blue Beetle
+                955916,     // Superman
+                1156593     // Supergirl
+            ],
+            tv: [
+                110492,     // Peacemaker
+                100088      // The Penguin
+            ],
+            search: [
+                'DC', 'DC Comics', 'DC Universe', 'Batman', 'Superman', 'Wonder Woman',
+                'Aquaman', 'Justice League', 'Suicide Squad', 'The Flash',
+                'Green Lantern', 'Peacemaker', 'The Penguin', 'Supergirl'
+            ]
+        },
+ 
+        starwars: {
+            name: 'Star Wars',
+            collections: [
+                10          // Star Wars Collection (theatrical saga) — verified: themoviedb.org/collection/10
+            ],
+            movies: [
+                12180       // Star Wars: The Clone Wars (2008 theatrical film) — verified: themoviedb.org/movie/12180
+            ],
+            tv: [
+                4194,       // Star Wars: The Clone Wars — verified: themoviedb.org/tv/4194
+                60554,      // Star Wars Rebels — verified: themoviedb.org/tv/60554
+                82856,      // The Mandalorian
+                83867,      // Andor
+                92830,      // Obi-Wan Kenobi
+                105971,     // Star Wars: The Bad Batch — verified: themoviedb.org/tv/105971
+                114461,     // Ahsoka
+                114478,     // Star Wars: Visions — verified: themoviedb.org/tv/114478
+                115036,     // The Book of Boba Fett
+                79093,      // Star Wars Resistance — verified: themoviedb.org/tv/79093
+                202879      // Star Wars: Skeleton Crew — verified: themoviedb.org/tv/202879
+            ],
+            search: [
+                'Star Wars', 'starwars', 'star-wars', 'The Mandalorian', 'Andor',
+                'Obi-Wan Kenobi', 'Ahsoka', 'The Book of Boba Fett', 'The Clone Wars',
+                'Rebels', 'The Bad Batch', 'Skeleton Crew', 'The Acolyte'
+            ]
+        },
+ 
+        harrypotter: {
+            name: 'Harry Potter',
+            collections: [
+                1241        // Harry Potter Collection — verified: themoviedb.org/collection/1241
+            ],
+            movies: [
+                259316,     // Fantastic Beasts
+                338952,     // Fantastic Beasts: The Crimes of Grindelwald
+                338953      // Fantastic Beasts: The Secrets of Dumbledore
+            ],
+            tv: [],
+            search: ['Harry Potter', 'Fantastic Beasts', 'Wizarding World']
+        },
+ 
+        lordoftherings: {
+            name: 'Lord of the Rings',
+            collections: [
+                119,        // The Lord of the Rings Collection — verified: themoviedb.org/collection/119
+                121938      // The Hobbit Collection — verified: themoviedb.org/collection/121938
+            ],
+            movies: [
+                839033      // The Lord of the Rings: The War of the Rohirrim (2024) — verified: themoviedb.org/movie/839033
+            ],
+            tv: [
+                84773       // The Rings of Power
+            ],
+            search: [
+                'Lord of the Rings', 'lordoftherings', 'lord-of-the-rings',
+                'The Lord of the Rings', 'The Hobbit', 'Rings of Power',
+                'Middle-earth', 'Middle Earth'
+            ]
+        },
+ 
+        spiderman: {
+            name: 'Spider-Man',
+            collections: [
+                556,        // Spider-Man Collection (Raimi trilogy) — verified: themoviedb.org/collection/556
+                125574      // The Amazing Spider-Man Collection — verified: themoviedb.org/collection/125574
+            ],
+            movies: [
+                315635,     // Spider-Man: Homecoming — verified: themoviedb.org/movie/315635
+                429617,     // Spider-Man: Far From Home — verified: themoviedb.org/movie/429617
+                634649,     // Spider-Man: No Way Home — verified: themoviedb.org/movie/634649
+                324857,     // Spider-Man: Into the Spider-Verse — verified: themoviedb.org/movie/324857
+                569094      // Spider-Man: Across the Spider-Verse — verified: themoviedb.org/movie/569094
+            ],
+            tv: [],
+            search: [
+                'Spider-Man', 'spiderman', 'spider-man', 'Spider Man',
+                'Spider-Man: Homecoming', 'Spider-Man: Far From Home',
+                'Spider-Man: No Way Home', 'Spider-Man: Into the Spider-Verse',
+                'Spider-Man: Across the Spider-Verse'
+            ]
+        },
+ 
+        fastfurious: {
+            name: 'Fast & Furious',
+            collections: [
+                9485        // The Fast and the Furious Collection (includes Tokyo Drift & Hobbs & Shaw) — verified: themoviedb.org/collection/9485
+            ],
+            movies: [],
+            tv: [],
+            search: [
+                'Fast & Furious', 'fastandfurious', 'fast-and-furious',
+                'Fast and Furious', 'The Fast and the Furious'
+            ]
+        },
+ 
+        johnwick: {
+            name: 'John Wick',
+            collections: [
+                404609      // John Wick Collection — verified: themoviedb.org/collection/404609
+            ],
+            movies: [
+                541671      // Ballerina (2025) — verified: themoviedb.org/movie/541671
+            ],
+            tv: [
+                72710       // The Continental: From the World of John Wick — verified: themoviedb.org/tv/72710
+            ],
+            search: ['John Wick', 'Ballerina', 'The Continental']
+        },
+ 
+        hungergames: {
+            name: 'The Hunger Games',
+            collections: [
+                131635      // The Hunger Games Collection — verified: themoviedb.org/collection/131635
+            ],
+            movies: [
+                695721      // The Hunger Games: The Ballad of Songbirds & Snakes — verified: themoviedb.org/movie/695721
+            ],
+            tv: [],
+            search: ['The Hunger Games', 'Hunger Games']
+        },
+ 
+        matrix: {
+            name: 'The Matrix',
+            collections: [
+                2344        // The Matrix Collection — verified: themoviedb.org/collection/2344
+            ],
+            movies: [],
+            tv: [],
+            search: ['The Matrix']
+        },
+ 
+        transformers: {
+            name: 'Transformers',
+            collections: [
+                8650        // Transformers Collection — verified: themoviedb.org/collection/8650
+            ],
+            movies: [
+                424783,     // Bumblebee
+                667574      // Transformers One
+            ],
+            tv: [],
+            search: ['Transformers', 'Bumblebee']
+        },
+ 
+        xmen: {
+            name: 'X-Men',
+            collections: [
+                748         // X-Men Collection — verified: themoviedb.org/collection/748
+            ],
+            movies: [
+                263115,     // X-Men Origins: Wolverine — verified: themoviedb.org/movie/263115
+                76170,      // The Wolverine — verified: themoviedb.org/movie/76170
+                447152      // Logan — verified: themoviedb.org/movie/447152
+            ],
+            tv: [
+                138502      // X-Men '97 — verified: themoviedb.org/tv/138502
+            ],
+            search: ['X-Men', 'X Men', 'Wolverine']
+        },
+ 
+        terminator: {
+            name: 'Terminator',
+            collections: [
+                528         // The Terminator Collection — verified: themoviedb.org/collection/528
+            ],
+            movies: [],
+            tv: [
+                239287      // Terminator Zero — verified: themoviedb.org/tv/239287
+            ],
+            search: ['Terminator']
+        },
+ 
+        predator: {
+            name: 'Predator',
+            collections: [
+                399         // Predator Collection — verified: themoviedb.org/collection/399 (excludes AVP crossovers)
+            ],
+            movies: [
+                1376434     // Predator: Killer of Killers (2025) — verified: themoviedb.org/movie/1376434
+            ],
+            tv: [],
+            search: ['Predator']
+        },
+ 
+        piratesofthecaribbean: {
+            name: 'Pirates of the Caribbean',
+            collections: [
+                295         // verified: themoviedb.org/collection/295
+            ],
+            movies: [],
+            tv: [],
+            search: ['Pirates of the Caribbean', 'Pirates of Caribbean', 'POTC', 'Jack Sparrow']
+        },
+ 
+        residentevil: {
+            name: 'Resident Evil',
+            collections: [
+                17255,      // main live-action film series (2002–2016)
+                133352      // CGI animated film collection
+            ],
+            movies: [
+                460458      // Welcome to Raccoon City (2021 reboot, not part of collection 17255)
+            ],
+            tv: [
+                110642      // Resident Evil: Infinite Darkness
+            ],
+            search: ['Resident Evil', 'Biohazard', 'Umbrella Corporation']
+        },
+ 
+        onepiece: {
+            name: 'One Piece',
+            collections: [
+                23456       // One Piece Collection (films) — verified: themoviedb.org/collection/23456
+            ],
+            movies: [],
+            tv: [
+                37854,      // One Piece (anime, 1999–present) — verified: themoviedb.org/tv/37854
+                111110      // ONE PIECE (live-action, 2023–present) — verified: themoviedb.org/tv/111110
+            ],
+            search: ['One Piece', 'One Piece Film', 'One Piece Movie']
+        },
+ 
+        demonslayer: {
+            name: 'Demon Slayer',
+            collections: [],
+            movies: [
+                635302,     // Demon Slayer: Mugen Train — verified: themoviedb.org/movie/635302
+                1067282,    // Demon Slayer: To the Swordsmith Village — verified: themoviedb.org/movie/1067282
+                1311031     // Demon Slayer: Infinity Castle (2025) — verified: themoviedb.org/movie/1311031
+            ],
+            tv: [
+                85937       // Demon Slayer: Kimetsu no Yaiba — verified: themoviedb.org/tv/85937
+            ],
+            search: ['Demon Slayer', 'demonslayer', 'demon-slayer', 'Kimetsu no Yaiba']
+        },
+ 
+        pokemon: {
+            name: 'Pokémon',
+            collections: [],
+            movies: [],
+            tv: [
+                60572,      // Pokémon (1997–2023, Ash saga) — verified: themoviedb.org/tv/60572
+                220150      // Pokémon Horizons (2023–present) — verified: themoviedb.org/tv/220150
+            ],
+            search: ['Pokémon', 'Pokemon', 'pokemon', 'Pokémon the Series', 'Pokémon Horizons']
+        },
+ 
+        doraemon: {
+            name: 'Doraemon',
+            collections: [
+                148065,     // Doraemon Movies (theatrical film series) — verified: themoviedb.org/collection/148065
+                728776      // Stand by Me Doraemon Collection (3DCG films) — verified: themoviedb.org/collection/728776
+            ],
+            movies: [],
+            tv: [
+                65733,      // Doraemon (2005–present anime) — verified: themoviedb.org/tv/65733
+                57911       // Doraemon (1979–2005 anime) — verified: themoviedb.org/tv/57911
+            ],
+            search: ['Doraemon', 'Doraemon Movie', 'Doraemon Nobita']
+        },
+ 
+        shinchan: {
+            name: 'Crayon Shin-chan',
+            collections: [
+                117354      // Crayon Shin-chan Collection (films) — verified: themoviedb.org/collection/117354
+            ],
+            movies: [],
+            tv: [
+                30623       // Shin Chan / Crayon Shin-chan (TV, 1992–present) — verified: themoviedb.org/tv/30623
+                            // NOTE: id 9661 was incorrect and has been removed.
+            ],
+            search: ['Crayon Shin-chan', 'crayonshinchan', 'shinchan', 'shin-chan', 'Shin-chan', 'Shinchan']
+        }
+    };
 
           /*
      * ==================================================
