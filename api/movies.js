@@ -969,39 +969,45 @@ bahubali: {
 
 dragonball: {
   name: 'Dragon Ball',
+
+  // TMDB collections
   collections: [
-    386410, // Classic Dragon Ball movies
-    620873  // Dragon Ball Super movies
+    386410, // Classic Dragon Ball movies — 4
+    620873  // Dragon Ball Super movies — 4
   ],
+
+  // Dragon Ball Z standalone movies
   movies: [
-    126963, // Dead Zone
-    126965, // The World's Strongest
-    126966, // The Tree of Might
-    126967, // Lord Slug
-    126969, // Cooler's Revenge
-    126970, // The Return of Cooler
-    126971, // Super Android 13!
-    126972, // Broly: The Legendary Super Saiyan
-    126973, // Bojack Unbound
-    126974, // Broly: Second Coming
-    126975, // Bio-Broly
-    126976, // Fusion Reborn
-    126977, // Wrath of the Dragon
-    39109    // The Path to Power
+    39100,  // Dragon Ball Z: The World's Strongest
+    39101,  // Dragon Ball Z: The Tree of Might
+    39102,  // Dragon Ball Z: Lord Slug
+    39103,  // Dragon Ball Z: The Return of Cooler
+    39104,  // Dragon Ball Z: Super Android 13!
+    34433,  // Dragon Ball Z: Broly - The Legendary Super Saiyan
+    39105,  // Dragon Ball Z: Bojack Unbound
+    44251,  // Dragon Ball Z: Broly - Second Coming
+    39106,  // Dragon Ball Z: Bio-Broly
+    39107,  // Dragon Ball Z: Fusion Reborn
+    39108   // Dragon Ball Z: Wrath of the Dragon
   ],
+
+  // Dragon Ball TV series
   tv: [
-    89305,  // Dragon Ball Super
-    62715,  // Dragon Ball Z Kai
     12971,  // Dragon Ball Z
-    12620   // Dragon Ball GT
+    61709,  // Dragon Ball Z Kai
+    12697,  // Dragon Ball GT
+    62715,  // Dragon Ball Super
+    236994  // Dragon Ball DAIMA
   ],
+
   search: [
     'dragon ball',
     'dragonball',
     'dragon ball z',
     'dragon ball super',
     'dragon ball gt',
-    'dragon ball kai'
+    'dragon ball kai',
+    'dragon ball daima'
   ]
 },
 
