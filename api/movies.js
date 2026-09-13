@@ -222,18 +222,280 @@ module.exports = async (
 
     try {
 
-        const {
+       const {
     id,
     type = '',
     query = '',
     genre = '',
     category = '',
     collection = '',
+    ott = '',
+    ott_providers = '',
     year = '',
     page = '1',
     language = 'en-US',
     region = 'IN'
 } = req.query || {};
+
+
+
+        /*
+ * ==================================================
+ * OTT PROVIDER LIST
+ * ==================================================
+ *
+ * /api/movies?ott_providers=true&language=en-US&region=IN
+ *
+ * Loads all OTT / streaming providers available
+ * in the selected region from TMDB.
+ *
+ * Movie + TV providers are combined and duplicates
+ * are removed.
+ *
+ * Only providers with India availability metadata
+ * are included.
+ *
+ * ==================================================
+ */
+
+if (
+    String(ott_providers).toLowerCase() === 'true'
+) {
+
+    const providerRegion =
+        String(region || 'IN').toUpperCase();
+
+    /*
+     * --------------------------------------------------
+     * GET MOVIE + TV PROVIDERS
+     * --------------------------------------------------
+     */
+
+    const [
+        movieProviderData,
+        tvProviderData
+    ] = await Promise.all([
+        tmdbRequest(
+            '/watch/providers/movie',
+            {
+                language,
+                watch_region:
+                    providerRegion
+            }
+        ),
+
+        tmdbRequest(
+            '/watch/providers/tv',
+            {
+                language,
+                watch_region:
+                    providerRegion
+            }
+        )
+    ]);
+
+
+    /*
+     * --------------------------------------------------
+     * COMBINE PROVIDERS
+     * --------------------------------------------------
+     */
+
+    const providerMap =
+        new Map();
+
+
+    const allProviders = [
+        ...(
+            Array.isArray(
+                movieProviderData.results
+            )
+                ? movieProviderData.results
+                : []
+        ),
+
+        ...(
+            Array.isArray(
+                tvProviderData.results
+            )
+                ? tvProviderData.results
+                : []
+        )
+    ];
+
+
+    /*
+     * --------------------------------------------------
+     * REMOVE DUPLICATES
+     * --------------------------------------------------
+     */
+
+    allProviders.forEach(
+        provider => {
+
+            const providerId =
+                Number(
+                    provider.provider_id
+                );
+
+            const providerName =
+                String(
+                    provider.provider_name ||
+                    ''
+                ).trim();
+
+
+            if (
+                !Number.isFinite(
+                    providerId
+                ) ||
+                !providerName
+            ) {
+                return;
+            }
+
+
+            /*
+             * Ignore channel-style entries.
+             *
+             * These are generally add-on channels rather
+             * than standalone OTT platforms.
+             */
+
+            if (
+                /amazon channel/i.test(
+                    providerName
+                ) ||
+                /apple tv channel/i.test(
+                    providerName
+                )
+            ) {
+                return;
+            }
+
+
+            const existing =
+                providerMap.get(
+                    providerId
+                );
+
+
+            /*
+             * Keep the provider with the better
+             * display priority.
+             */
+
+            if (
+                !existing ||
+                Number(
+                    provider.display_priority ??
+                    9999
+                ) <
+                Number(
+                    existing.display_priority ??
+                    9999
+                )
+            ) {
+
+                providerMap.set(
+                    providerId,
+                    {
+                        provider_id:
+                            providerId,
+
+                        provider_name:
+                            providerName,
+
+                        logo_path:
+                            provider.logo_path ||
+                            null,
+
+                        display_priority:
+                            Number(
+                                provider.display_priority ??
+                                9999
+                            )
+                    }
+                );
+
+            }
+
+        }
+    );
+
+
+    /*
+     * --------------------------------------------------
+     * SORT PROVIDERS
+     * --------------------------------------------------
+     */
+
+    const providers =
+        Array.from(
+            providerMap.values()
+        ).sort(
+            (a, b) => {
+
+                const priorityA =
+                    Number(
+                        a.display_priority ??
+                        9999
+                    );
+
+                const priorityB =
+                    Number(
+                        b.display_priority ??
+                        9999
+                    );
+
+
+                if (
+                    priorityA !==
+                    priorityB
+                ) {
+                    return (
+                        priorityA -
+                        priorityB
+                    );
+                }
+
+
+                return a.provider_name
+                    .localeCompare(
+                        b.provider_name
+                    );
+
+            }
+        );
+
+
+    /*
+     * --------------------------------------------------
+     * RESPONSE
+     * --------------------------------------------------
+     */
+
+    return res
+        .status(200)
+        .json({
+
+            success:
+                true,
+
+            mode:
+                'ott-providers',
+
+            region:
+                providerRegion,
+
+            totalResults:
+                providers.length,
+
+            providers
+
+        });
+
+}
 
 
         /*
@@ -1909,6 +2171,346 @@ if (
 
             movies:
                 combined
+
+        });
+
+}
+
+        /*
+ * ==================================================
+ * OTT CATALOGUE
+ * ==================================================
+ *
+ * Example:
+ *
+ * /api/movies?ott=8
+ *
+ * Uses TMDB Discover with:
+ *
+ * - watch_region
+ * - with_watch_providers
+ * - flatrate
+ * - free
+ * - ads
+ *
+ * This returns both movies and TV shows.
+ *
+ * ==================================================
+ */
+
+if (
+    String(ott).trim()
+) {
+
+    const providerId =
+        Number(
+            String(ott).trim()
+        );
+
+
+    /*
+     * --------------------------------------------------
+     * VALIDATE PROVIDER ID
+     * --------------------------------------------------
+     */
+
+    if (
+        !Number.isInteger(
+            providerId
+        ) ||
+        providerId <= 0
+    ) {
+
+        return res
+            .status(400)
+            .json({
+
+                success:
+                    false,
+
+                error:
+                    'Invalid OTT provider ID'
+
+            });
+
+    }
+
+
+    /*
+     * --------------------------------------------------
+     * MOVIES + TV
+     * --------------------------------------------------
+     *
+     * TMDB supports with_watch_providers
+     * together with watch_region.
+     *
+     * Monetization:
+     *
+     * flatrate = subscription
+     * free     = free streaming
+     * ads      = ad-supported streaming
+     *
+     * Rent/buy are intentionally excluded because
+     * this section is for OTT/streaming platforms.
+     *
+     * --------------------------------------------------
+     */
+
+    const moviePromise =
+        tmdbRequest(
+            '/discover/movie',
+            {
+
+                language,
+
+                page,
+
+                region,
+
+                watch_region:
+                    region,
+
+                with_watch_providers:
+                    String(providerId),
+
+                with_watch_monetization_types:
+                    'flatrate|free|ads',
+
+                sort_by:
+                    'popularity.desc',
+
+                include_adult:
+                    'false',
+
+                include_video:
+                    'false'
+
+            }
+        );
+
+
+    const tvPromise =
+        tmdbRequest(
+            '/discover/tv',
+            {
+
+                language,
+
+                page,
+
+                watch_region:
+                    region,
+
+                with_watch_providers:
+                    String(providerId),
+
+                with_watch_monetization_types:
+                    'flatrate|free|ads',
+
+                sort_by:
+                    'popularity.desc',
+
+                include_adult:
+                    'false'
+
+            }
+        );
+
+
+    const [
+        movieData,
+        tvData
+    ] = await Promise.all([
+        moviePromise,
+        tvPromise
+    ]);
+
+
+    /*
+     * --------------------------------------------------
+     * NORMALIZE MOVIES
+     * --------------------------------------------------
+     */
+
+    const movies =
+        Array.isArray(
+            movieData.results
+        )
+            ? movieData.results.map(
+                normalizeMovie
+            )
+            : [];
+
+
+    /*
+     * --------------------------------------------------
+     * NORMALIZE TV
+     * --------------------------------------------------
+     */
+
+    const tvShows =
+        Array.isArray(
+            tvData.results
+        )
+            ? tvData.results.map(
+                normalizeTV
+            )
+            : [];
+
+
+    /*
+     * --------------------------------------------------
+     * COMBINE
+     * --------------------------------------------------
+     */
+
+    const combined = [
+        ...movies,
+        ...tvShows
+    ];
+
+
+    /*
+     * --------------------------------------------------
+     * SORT
+     * --------------------------------------------------
+     *
+     * Normalizers already expose rating/voteCount.
+     * Use rating first, then vote count.
+     *
+     * --------------------------------------------------
+     */
+
+    combined.sort(
+        (a, b) => {
+
+            const ratingA =
+                Number(
+                    a.rating || 0
+                );
+
+            const ratingB =
+                Number(
+                    b.rating || 0
+                );
+
+
+            if (
+                ratingA !==
+                ratingB
+            ) {
+                return (
+                    ratingB -
+                    ratingA
+                );
+            }
+
+
+            return (
+                Number(
+                    b.voteCount || 0
+                ) -
+                Number(
+                    a.voteCount || 0
+                )
+            );
+
+        }
+    );
+
+
+    /*
+     * --------------------------------------------------
+     * REMOVE DUPLICATES
+     * --------------------------------------------------
+     */
+
+    const unique =
+        new Map();
+
+
+    combined.forEach(
+        item => {
+
+            if (
+                !item ||
+                !item.id ||
+                !item.type
+            ) {
+                return;
+            }
+
+
+            const key =
+                `${item.type}:${item.id}`;
+
+
+            if (
+                !unique.has(key)
+            ) {
+
+                unique.set(
+                    key,
+                    item
+                );
+
+            }
+
+        }
+    );
+
+
+    const results =
+        Array.from(
+            unique.values()
+        );
+
+
+    /*
+     * --------------------------------------------------
+     * RESPONSE
+     * --------------------------------------------------
+     */
+
+    return res
+        .status(200)
+        .json({
+
+            success:
+                true,
+
+            mode:
+                'ott',
+
+            providerId:
+                providerId,
+
+            region:
+                region,
+
+            page:
+                Math.max(
+                    Number(page) || 1,
+                    1
+                ),
+
+            totalPages:
+                Math.max(
+                    Number(
+                        movieData.total_pages ||
+                        1
+                    ),
+                    Number(
+                        tvData.total_pages ||
+                        1
+                    )
+                ),
+
+            totalResults:
+                results.length,
+
+            movies:
+                results
 
         });
 
