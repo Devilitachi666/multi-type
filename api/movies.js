@@ -834,15 +834,174 @@ if (String(collection).trim()) {
             search: ['Predator']
         },
  
-        piratesofthecaribbean: {
-            name: 'Pirates of the Caribbean',
-            collections: [
-                295         // verified: themoviedb.org/collection/295
-            ],
-            movies: [],
-            tv: [],
-            search: ['Pirates of the Caribbean', 'Pirates of Caribbean', 'POTC', 'Jack Sparrow']
-        },
+       piratesofthecaribbean: {
+  name: 'Pirates of the Caribbean',
+  collections: [295],
+  movies: [],
+  tv: [],
+  search: [
+    'pirates of the caribbean',
+    'pirates caribbean',
+    'pirates'
+  ]
+},
+
+      twilight: {
+  name: 'Twilight Saga',
+  collections: [33514],
+  movies: [],
+  tv: [],
+  search: [
+    'twilight',
+    'twilight saga'
+  ]
+},
+
+      missionimpossible: {
+  name: 'Mission: Impossible',
+  collections: [87359],
+  movies: [],
+  tv: [],
+  search: [
+    'mission impossible',
+    'mission: impossible',
+    'mi'
+  ]
+},
+
+      finaldestination: {
+  name: 'Final Destination',
+  collections: [8864],
+  movies: [],
+  tv: [],
+  search: [
+    'final destination',
+    'final destination saga'
+  ]
+},
+
+      planetapes: {
+  name: 'Planet of the Apes',
+  collections: [
+    1709,    // Original 5-film collection
+    173710   // Reboot collection
+  ],
+  movies: [],
+  tv: [],
+  search: [
+    'planet of the apes',
+    'planet apes',
+    'apes'
+  ]
+},
+
+      theconjuring: {
+  name: 'The Conjuring Universe',
+  collections: [
+    313086,  // The Conjuring collection
+    402074   // Annabelle collection
+  ],
+  movies: [
+    439079,  // The Nun
+    968051   // The Nun II
+  ],
+  tv: [],
+  search: [
+    'the conjuring',
+    'conjuring',
+    'conjuring universe',
+    'annabelle',
+    'the nun'
+  ]
+},
+
+jurassicpark: {
+  name: 'Jurassic Park',
+  collections: [328],
+  movies: [],
+  tv: [],
+  search: [
+    'jurassic park',
+    'jurassic world',
+    'jurassic'
+  ]
+},
+
+avatar: {
+  name: 'Avatar',
+  collections: [87096],
+  movies: [],
+  tv: [],
+  search: [
+    'avatar',
+    'avatar james cameron'
+  ]
+},
+
+dhoom: {
+  name: 'Dhoom',
+  collections: [44976],
+  movies: [],
+  tv: [],
+  search: [
+    'dhoom',
+    'dhoom series'
+  ]
+},
+
+bahubali: {
+  name: 'Baahubali',
+  collections: [],
+  movies: [
+    256040, // Baahubali: The Beginning
+    350312  // Baahubali 2: The Conclusion
+  ],
+  tv: [
+    71819   // Baahubali: The Lost Legends
+  ],
+  search: [
+    'bahubali',
+    'baahubali',
+    'bahubali 2',
+    'baahubali 2'
+  ]
+},
+
+dragonball: {
+  name: 'Dragon Ball',
+  collections: [
+    386410
+  ],
+  movies: [],
+  tv: [],
+  search: [
+    'dragon ball',
+    'dragonball'
+  ]
+},
+
+      batman: {
+  name: 'Batman',
+  collections: [],
+  movies: [
+    268,       // Batman (1989)
+    364,       // Batman Returns
+    414,       // Batman Forever
+    415,       // Batman & Robin
+    272,       // Batman Begins
+    155,       // The Dark Knight
+    49026,     // The Dark Knight Rises
+    209112,    // Batman v Superman
+    414906     // The Batman (2022)
+  ],
+  tv: [],
+  search: [
+    'batman',
+    'batman movies',
+    'the batman'
+  ]
+},
+
  
         residentevil: {
             name: 'Resident Evil',
@@ -886,16 +1045,24 @@ if (String(collection).trim()) {
             search: ['Demon Slayer', 'demonslayer', 'demon-slayer', 'Kimetsu no Yaiba']
         },
  
-        pokemon: {
-            name: 'Pokémon',
-            collections: [],
-            movies: [],
-            tv: [
-                60572,      // Pokémon (1997–2023, Ash saga) — verified: themoviedb.org/tv/60572
-                220150      // Pokémon Horizons (2023–present) — verified: themoviedb.org/tv/220150
-            ],
-            search: ['Pokémon', 'Pokemon', 'pokemon', 'Pokémon the Series', 'Pokémon Horizons']
-        },
+       pokemon: {
+  name: 'Pokémon',
+  collections: [
+    34055,   // Original Pokémon movie collection
+    661026,  // Diamond & Pearl movies
+    661031   // Alternate Continuity movies
+  ],
+  movies: [],
+  tv: [
+    60572
+  ],
+  search: [
+    'pokemon',
+    'pokémon',
+    'pokemon movies',
+    'pokemon anime'
+  ]
+},
  
         doraemon: {
             name: 'Doraemon',
