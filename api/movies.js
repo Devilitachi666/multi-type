@@ -573,16 +573,17 @@ module.exports = async (
 
 if (String(collection).trim()) {
 
-   const FRANCHISES = {
+const FRANCHISES = {
 
     marvel: {
         name: 'Marvel',
         collections: [],
         movies: [
+            // Existing verified entries
             1726,       // Iron Man
             10138,      // Iron Man 2
             68721,      // Iron Man 3
-            99861,      // Avengers
+            99861,      // Avengers: Age of Ultron
             100402,     // Captain America: The Winter Soldier
             271110,     // Captain America: Civil War
             299536,     // Avengers: Infinity War
@@ -593,7 +594,38 @@ if (String(collection).trim()) {
             616037,     // Thor: Love and Thunder
             609681,     // The Marvels
             822119,     // Captain America: Brave New World
-            986056      // Thunderbolts*
+            986056,     // Thunderbolts*
+
+            // Additional major MCU movies
+            1724,       // The Incredible Hulk
+            10195,      // Thor
+            76338,      // Thor: The Dark World
+            284053,     // Thor: Ragnarok
+            284052,     // Doctor Strange
+            453395,     // Doctor Strange in the Multiverse of Madness
+            118340,     // Guardians of the Galaxy
+            283995,     // Guardians of the Galaxy Vol. 2
+            363088,     // Guardians of the Galaxy Vol. 3
+            102899,     // Ant-Man
+            345940,     // Ant-Man and the Wasp
+            640146,     // Ant-Man and the Wasp: Quantumania
+            284054,     // Black Panther
+            505642,     // Black Panther: Wakanda Forever
+            299537,     // Captain Marvel
+            524434,     // Eternals
+
+            // Major non-MCU Marvel
+            557,        // Spider-Man
+            558,        // Spider-Man 2
+            559,        // Spider-Man 3
+            1930,       // The Amazing Spider-Man
+            102382,     // The Amazing Spider-Man 2
+            293660,     // Deadpool
+            383498,     // Deadpool 2
+            533535,     // Deadpool & Wolverine
+            447152,     // Logan
+            263115,     // X-Men Origins: Wolverine
+            76170       // The Wolverine
         ],
         tv: [
             85271,      // WandaVision
@@ -605,11 +637,16 @@ if (String(collection).trim()) {
             92783,      // She-Hulk
             91363,      // What If...?
             114472,     // Secret Invasion
-            138501      // Agatha All Along
+            138501,     // Agatha All Along
+            122226,     // Echo
+            202555,     // Daredevil: Born Again
+            114471,     // Ironheart
+            138505      // Marvel Zombies
         ],
         search: [
             'Marvel',
             'Marvel Studios',
+            'MCU',
             'Avengers',
             'Iron Man',
             'Captain America',
@@ -674,16 +711,30 @@ if (String(collection).trim()) {
         collections: [
             10
         ],
-        movies: [],
+        movies: [
+            12180
+        ],
         tv: [
-            82856,      // The Mandalorian
-            83867,      // Andor
-            92830,      // Obi-Wan Kenobi
-            114461,     // Ahsoka
-            115036      // The Book of Boba Fett
+            4194,
+            60554,
+            82856,
+            83867,
+            92830,
+            105971,
+            114461,
+            114478,
+            115036,
+            79093,
+            202879,
+
+            // Additional verified/current Star Wars TV
+            114479,     // The Acolyte
+            253760      // LEGO Star Wars: Rebuild the Galaxy
         ],
         search: [
             'Star Wars',
+            'starwars',
+            'star-wars',
             'The Mandalorian',
             'Andor',
             'Obi-Wan Kenobi',
@@ -693,7 +744,10 @@ if (String(collection).trim()) {
             'Rebels',
             'The Bad Batch',
             'Skeleton Crew',
-            'The Acolyte'
+            'Visions',
+            'The Acolyte',
+            'Tales of the Jedi',
+            'Tales of the Empire'
         ]
     },
 
@@ -703,9 +757,9 @@ if (String(collection).trim()) {
             1241
         ],
         movies: [
-            259316,     // Fantastic Beasts
-            338952,     // Fantastic Beasts: The Crimes of Grindelwald
-            338953      // Fantastic Beasts: The Secrets of Dumbledore
+            259316,
+            338952,
+            338953
         ],
         tv: [],
         search: [
@@ -718,35 +772,56 @@ if (String(collection).trim()) {
     lordoftherings: {
         name: 'Lord of the Rings',
         collections: [
-            119
+            119,
+            121938
         ],
-        movies: [],
+        movies: [
+            839033
+        ],
         tv: [
-            84773      // The Rings of Power
+            84773
         ],
         search: [
             'Lord of the Rings',
+            'lordoftherings',
+            'lord-of-the-rings',
             'The Lord of the Rings',
             'The Hobbit',
             'Rings of Power',
-            'Middle-earth'
+            'Middle-earth',
+            'Middle Earth'
         ]
     },
 
     spiderman: {
         name: 'Spider-Man',
         collections: [
-            556
+            556,
+            125574
         ],
-        movies: [],
-        tv: [],
+        movies: [
+            315635,
+            429617,
+            634649,
+            324857,
+            569094
+        ],
+        tv: [
+            888,        // Spider-Man (1994)
+            34391,      // Marvel's Ultimate Spider-Man
+            3854,       // The Spectacular Spider-Man
+            10079,      // Spider-Man Unlimited
+            1269        // Spider-Man and His Amazing Friends
+        ],
         search: [
             'Spider-Man',
+            'spiderman',
+            'spider-man',
             'Spider Man',
+            'Spider-Verse',
             'Spider-Man: Homecoming',
             'Spider-Man: Far From Home',
             'Spider-Man: No Way Home',
-            'Venom',
             'Spider-Man: Into the Spider-Verse',
             'Spider-Man: Across the Spider-Verse'
         ]
@@ -761,6 +836,8 @@ if (String(collection).trim()) {
         tv: [],
         search: [
             'Fast & Furious',
+            'fastandfurious',
+            'fast-and-furious',
             'Fast and Furious',
             'The Fast and the Furious'
         ]
@@ -771,11 +848,16 @@ if (String(collection).trim()) {
         collections: [
             404609
         ],
-        movies: [],
-        tv: [],
+        movies: [
+            541671
+        ],
+        tv: [
+            72710
+        ],
         search: [
             'John Wick',
-            'Ballerina'
+            'Ballerina',
+            'The Continental'
         ]
     },
 
@@ -784,11 +866,14 @@ if (String(collection).trim()) {
         collections: [
             131635
         ],
-        movies: [],
+        movies: [
+            695721
+        ],
         tv: [],
         search: [
             'The Hunger Games',
-            'Hunger Games'
+            'Hunger Games',
+            'Ballad of Songbirds and Snakes'
         ]
     },
 
@@ -800,7 +885,8 @@ if (String(collection).trim()) {
         movies: [],
         tv: [],
         search: [
-            'The Matrix'
+            'The Matrix',
+            'Matrix'
         ]
     },
 
@@ -810,13 +896,14 @@ if (String(collection).trim()) {
             8650
         ],
         movies: [
-            424783,     // Bumblebee
-            667574      // Transformers One
+            424783,
+            667574
         ],
         tv: [],
         search: [
             'Transformers',
-            'Bumblebee'
+            'Bumblebee',
+            'Transformers One'
         ]
     },
 
@@ -825,13 +912,20 @@ if (String(collection).trim()) {
         collections: [
             748
         ],
-        movies: [],
-        tv: [],
+        movies: [
+            263115,
+            76170,
+            447152
+        ],
+        tv: [
+            138502
+        ],
         search: [
             'X-Men',
             'X Men',
             'Wolverine',
-            'Deadpool'
+            'Deadpool',
+            'X-Men 97'
         ]
     },
 
@@ -841,21 +935,27 @@ if (String(collection).trim()) {
             528
         ],
         movies: [],
-        tv: [],
+        tv: [
+            239287
+        ],
         search: [
-            'Terminator'
+            'Terminator',
+            'Terminator Zero'
         ]
     },
 
-        predator: {
+    predator: {
         name: 'Predator',
         collections: [
             399
         ],
-        movies: [],
+        movies: [
+            1376434
+        ],
         tv: [],
         search: [
-            'Predator'
+            'Predator',
+            'Predator: Killer of Killers'
         ]
     },
 
@@ -877,14 +977,14 @@ if (String(collection).trim()) {
     residentevil: {
         name: 'Resident Evil',
         collections: [
-            17255,      // main live-action film series (2002–2016)
-            133352      // CGI animated film collection (Degeneration, Damnation, Vendetta, Death Island)
+            17255,
+            133352
         ],
         movies: [
-            460458      // Welcome to Raccoon City (2021 reboot, not part of collection 17255)
+            460458
         ],
         tv: [
-            110642      // Resident Evil: Infinite Darkness
+            110642
         ],
         search: [
             'Resident Evil',
@@ -893,7 +993,6 @@ if (String(collection).trim()) {
         ]
     },
 
-
     onepiece: {
         name: 'One Piece',
         collections: [
@@ -901,7 +1000,8 @@ if (String(collection).trim()) {
         ],
         movies: [],
         tv: [
-            37854
+            37854,
+            111110
         ],
         search: [
             'One Piece',
@@ -915,6 +1015,7 @@ if (String(collection).trim()) {
         collections: [],
         movies: [
             635302,
+            1067282,
             1311031
         ],
         tv: [
@@ -922,6 +1023,8 @@ if (String(collection).trim()) {
         ],
         search: [
             'Demon Slayer',
+            'demonslayer',
+            'demon-slayer',
             'Kimetsu no Yaiba'
         ]
     },
@@ -931,11 +1034,13 @@ if (String(collection).trim()) {
         collections: [],
         movies: [],
         tv: [
-            60572
+            60572,
+            220150
         ],
         search: [
             'Pokémon',
             'Pokemon',
+            'pokemon',
             'Pokémon the Series',
             'Pokémon Horizons'
         ]
@@ -943,10 +1048,14 @@ if (String(collection).trim()) {
 
     doraemon: {
         name: 'Doraemon',
-        collections: [],
+        collections: [
+            148065,
+            728776
+        ],
         movies: [],
         tv: [
-            65733
+            65733,
+            57911
         ],
         search: [
             'Doraemon',
@@ -962,10 +1071,13 @@ if (String(collection).trim()) {
         ],
         movies: [],
         tv: [
-            9661
+            30623
         ],
         search: [
             'Crayon Shin-chan',
+            'crayonshinchan',
+            'shinchan',
+            'shin-chan',
             'Shin-chan',
             'Shinchan'
         ]
