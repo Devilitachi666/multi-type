@@ -970,13 +970,38 @@ bahubali: {
 dragonball: {
   name: 'Dragon Ball',
   collections: [
-    386410
+    386410, // Classic Dragon Ball movies
+    620873  // Dragon Ball Super movies
   ],
-  movies: [],
-  tv: [],
+  movies: [
+    126963, // Dead Zone
+    126965, // The World's Strongest
+    126966, // The Tree of Might
+    126967, // Lord Slug
+    126969, // Cooler's Revenge
+    126970, // The Return of Cooler
+    126971, // Super Android 13!
+    126972, // Broly: The Legendary Super Saiyan
+    126973, // Bojack Unbound
+    126974, // Broly: Second Coming
+    126975, // Bio-Broly
+    126976, // Fusion Reborn
+    126977, // Wrath of the Dragon
+    39109    // The Path to Power
+  ],
+  tv: [
+    89305,  // Dragon Ball Super
+    62715,  // Dragon Ball Z Kai
+    12971,  // Dragon Ball Z
+    12620   // Dragon Ball GT
+  ],
   search: [
     'dragon ball',
-    'dragonball'
+    'dragonball',
+    'dragon ball z',
+    'dragon ball super',
+    'dragon ball gt',
+    'dragon ball kai'
   ]
 },
 
