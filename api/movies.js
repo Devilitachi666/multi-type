@@ -222,7 +222,7 @@ module.exports = async (
 
     try {
 
-      const {
+     const {
     id,
     type = '',
     query = '',
@@ -230,6 +230,8 @@ module.exports = async (
     category = '',
     collection = '',
     year = '',
+    ott = '',
+    ott_providers = '',
     genz = '',
     page = '1',
     language = 'en-US',
